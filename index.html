@@ -95,8 +95,7 @@
 
   #search,
   .input,
-  .select,
-  .textarea{
+  .select{
     width:100%;
     padding:12px 14px;
     border-radius:8px;
@@ -107,14 +106,8 @@
     font-size:14px;
   }
 
-  .textarea{
-    min-height:90px;
-    resize:vertical;
-  }
-
   #search::placeholder,
-  .input::placeholder,
-  .textarea::placeholder{
+  .input::placeholder{
     color:var(--muted);
   }
 
@@ -122,6 +115,12 @@
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:12px;
+  }
+
+  .list{
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
   }
 
   .row{
@@ -302,7 +301,7 @@
       <div class="topbar">
         <button class="btn btn-primary" onclick="loginAdmin()">Admin Login</button>
         <button class="btn" onclick="logoutAdmin()">Exit Admin</button>
-        <button class="btn" onclick="renderList(searchEl.value); renderQueue()">Refresh</button>
+        <button class="btn" onclick="renderAll()">Refresh</button>
       </div>
       <div class="tiny" id="adminStatus"></div>
     </div>
@@ -357,46 +356,44 @@
       </div>
 
       <div id="newLevelFields" style="display:none; margin-top:12px;">
-        <div class="section" style="margin:0; padding:0; border:none; background:transparent;">
-          <h3 style="margin:0 0 12px;">New level details</h3>
+        <h3 style="margin:0 0 12px;">New level details</h3>
 
-          <div class="grid">
-            <div>
-              <label class="muted">Level name</label>
-              <input id="newName" class="input" type="text" placeholder="Level name" />
-            </div>
-            <div>
-              <label class="muted">Creator</label>
-              <input id="newCreator" class="input" type="text" placeholder="Level creator" />
-            </div>
+        <div class="grid">
+          <div>
+            <label class="muted">Level name</label>
+            <input id="newName" class="input" type="text" placeholder="Level name" />
           </div>
+          <div>
+            <label class="muted">Creator</label>
+            <input id="newCreator" class="input" type="text" placeholder="Level creator" />
+          </div>
+        </div>
 
-          <div class="grid" style="margin-top:12px;">
-            <div>
-              <label class="muted">Difficulty</label>
-              <input id="newDiff" class="input" type="text" placeholder="Extreme Demon / Insane Demon / etc." />
-            </div>
-            <div>
-              <label class="muted">Points</label>
-              <input id="newPoints" class="input" type="text" placeholder="23.99" />
-            </div>
+        <div class="grid" style="margin-top:12px;">
+          <div>
+            <label class="muted">Difficulty</label>
+            <input id="newDiff" class="input" type="text" placeholder="Extreme Demon / Insane Demon / etc." />
           </div>
+          <div>
+            <label class="muted">Points</label>
+            <input id="newPoints" class="input" type="text" placeholder="23.99" />
+          </div>
+        </div>
 
-          <div class="grid" style="margin-top:12px;">
-            <div>
-              <label class="muted">Thumbnail image URL</label>
-              <input id="newImg" class="input" type="text" placeholder="Image URL" />
-            </div>
-            <div>
-              <label class="muted">Video URL</label>
-              <input id="newVideo" class="input" type="text" placeholder="YouTube embed or Drive preview URL" />
-            </div>
+        <div class="grid" style="margin-top:12px;">
+          <div>
+            <label class="muted">Thumbnail image URL</label>
+            <input id="newImg" class="input" type="text" placeholder="Image URL" />
           </div>
+          <div>
+            <label class="muted">Video URL</label>
+            <input id="newVideo" class="input" type="text" placeholder="YouTube embed or Drive preview URL" />
+          </div>
+        </div>
 
-          <div style="margin-top:12px;">
-            <label class="muted">Verifier</label>
-            <input id="newVerifier" class="input" type="text" placeholder="Verifier / first victor" />
-          </div>
+        <div style="margin-top:12px;">
+          <label class="muted">Verifier</label>
+          <input id="newVerifier" class="input" type="text" placeholder="Verifier / first victor" />
         </div>
       </div>
 
@@ -426,23 +423,13 @@
 </div>
 
 <script>
-function makeThumb(title, accent = "#ff4b4b", accent2 = "#111522") {
-  const svg = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
-    <defs>
-      <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-        <stop offset="0%" stop-color="${accent2}"/>
-        <stop offset="100%" stop-color="${accent}"/>
-      </linearGradient>
-    </defs>
-    <rect width="640" height="360" fill="url(#g)"/>
-    <circle cx="520" cy="110" r="70" fill="rgba(255,255,255,0.10)"/>
-    <circle cx="120" cy="255" r="56" fill="rgba(0,0,0,0.25)"/>
-    <path d="M0 280 L120 210 L220 250 L330 180 L450 230 L640 150 L640 360 L0 360 Z" fill="rgba(0,0,0,0.18)"/>
-    <text x="50%" y="52%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" fill="#ffffff">${title}</text>
-    <text x="50%" y="65%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#dce4f5">PSHS-MC Demonlist</text>
-  </svg>`;
-  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+function escapeHTML(str){
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function normalizeVideo(url){
@@ -457,6 +444,12 @@ function normalizeVideo(url){
   if(watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
   return s;
 }
+
+const STORAGE_LEVELS = "pshs_demonlist_levels_v3";
+const STORAGE_PENDING = "pshs_demonlist_pending_v3";
+const STORAGE_ADMIN = "pshs_admin_v3";
+
+let isAdmin = localStorage.getItem(STORAGE_ADMIN) === "1";
 
 const defaultLevels = [
   {
@@ -499,7 +492,7 @@ const defaultLevels = [
     id: "533927",
     diff: "Hard Demon",
     points: "11.16",
-    img: "https://imgs.search.brave.com/MPJ9w0-ZTvqphSCuEYGqWFUlxPma3WAO-8g-2kzsz4A/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlv/L2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1uaW5l/LWNpcmNsZXMtbTE5/MngxMDgud2VicA",
+    img: "https://imgs.search.brave.com/MPJ9w0-ZTvqphSCuEYGqWFUlxPma3WAO-8g-2kzsz4A/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlvL2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1uaW5l/LWNpcmNsZXMtbTE5/MngxMDgud2VicA",
     video: "https://www.youtube.com/embed/DO36t7DV0ec",
     verifier: "sadboi202"
   },
@@ -510,7 +503,7 @@ const defaultLevels = [
     id: "6939821",
     diff: "Hard Demon",
     points: "11.14",
-    img: "https://imgs.search.brave.com/PtElB1kO3lVJRFd-i07TXhaAYOFuBepTEMDaAQ67tGc/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlv/L2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1qYXdi/cmVha2VyLW0xOTJ4/MTA4LndlYnA",
+    img: "https://imgs.search.brave.com/PtElB1kO3lVJRFd-i07TXhaAYOFuBepTEMDaAQ67tGc/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlvL2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1qYXdi/cmVha2VyLW0xOTJ4/MTA4LndlYnA",
     video: "https://drive.google.com/file/d/1HYy3aCN4TvQTkoid7fDHAD12guzGlRBe/preview",
     verifier: "daBlooKat121"
   },
@@ -521,7 +514,7 @@ const defaultLevels = [
     id: "111205474",
     diff: "Hard Demon",
     points: "8.01",
-    img: makeThumb("Thermal Madness", "#a855f7", "#15081f"),
+    img: "https://i.ytimg.com/vi/placeholder/mqdefault.jpg",
     video: "",
     verifier: "N/A, no info"
   },
@@ -532,19 +525,16 @@ const defaultLevels = [
     id: "493898",
     diff: "Medium Demon",
     points: "5.91",
-    img: "https://imgs.search.brave.com/rfgpinVitTV25ZVcwtl4x8v9gyFBsys_skODwytdwyI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWRhc2h3YXZl/LmNvbS9jYWNoZS9k/YXRhL2ltYWdlL2dh/bWUvbWF4cmVzZGVm/YXVsdDM2LW0zMjB4/MTgwLndlYnA",
+    img: "https://imgs.search.brave.com/rfgpinVitTV25ZVcwtl4x8v9gyFBsys_skODwytdwyI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWRhc2h3YXZlLmNvbS9jYWNoZS9kYXRhL2ltYWdlL2dhbWUvbWF4cmVzZGVmYXVsdDM2LW0zMjB4MTgwLndlYnA",
     video: "https://drive.google.com/file/d/1IBfQPdzNedlEc2r_9eF2PjP-yuToTvYZ/preview",
     verifier: "daBlooKat121"
   }
 ];
 
-const STORAGE_LEVELS = "pshs_demonlist_levels_v2";
-const STORAGE_PENDING = "pshs_demonlist_pending_v2";
-const STORAGE_ADMIN = "pshs_admin_v2";
-
-let levels = loadJSON(STORAGE_LEVELS, defaultLevels);
-let pending = loadJSON(STORAGE_PENDING, []);
-let isAdmin = localStorage.getItem(STORAGE_ADMIN) === "1";
+const STORAGE_LEVELS_KEY = STORAGE_LEVELS;
+const STORAGE_PENDING_KEY = STORAGE_PENDING;
+let levels = loadJSON(STORAGE_LEVELS_KEY, defaultLevels);
+let pending = loadJSON(STORAGE_PENDING_KEY, []);
 
 const listEl = document.getElementById("list");
 const listPage = document.getElementById("listPage");
@@ -569,24 +559,21 @@ function loadJSON(key, fallback){
 }
 
 function saveState(){
-  localStorage.setItem(STORAGE_LEVELS, JSON.stringify(levels));
-  localStorage.setItem(STORAGE_PENDING, JSON.stringify(pending));
+  localStorage.setItem(STORAGE_LEVELS_KEY, JSON.stringify(levels));
+  localStorage.setItem(STORAGE_PENDING_KEY, JSON.stringify(pending));
   localStorage.setItem(STORAGE_ADMIN, isAdmin ? "1" : "0");
-}
-
-function escapeHTML(str){
-  return String(str ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function reindexLevels(){
   levels.forEach((d, i) => {
     d.rank = i + 1;
   });
+}
+
+function updateAdminStatus(){
+  adminStatus.textContent = isAdmin
+    ? "Admin mode is ON. Move buttons, delete buttons, and moderation controls are visible."
+    : "Admin mode is OFF.";
 }
 
 function loginAdmin(){
@@ -598,7 +585,7 @@ function loginAdmin(){
     saveState();
     renderAll();
     alert("Admin mode enabled");
-  } else {
+  }else{
     alert("Wrong password");
   }
 }
@@ -607,12 +594,6 @@ function logoutAdmin(){
   isAdmin = false;
   saveState();
   renderAll();
-}
-
-function updateAdminStatus(){
-  adminStatus.textContent = isAdmin
-    ? "Admin mode is ON. Move buttons and moderation buttons are visible."
-    : "Admin mode is OFF.";
 }
 
 function populateLevelSelect(){
@@ -649,6 +630,7 @@ function renderList(filter = ""){
           <div class="topbar" style="margin-top:10px;">
             <button class="btn" onclick="event.stopPropagation(); moveLevel(${d.rank}, -1)">↑ Up</button>
             <button class="btn" onclick="event.stopPropagation(); moveLevel(${d.rank}, 1)">↓ Down</button>
+            <button class="btn btn-danger" onclick="event.stopPropagation(); deleteLevel(${d.rank})">Delete</button>
           </div>
         ` : ""}
       </div>
@@ -670,7 +652,7 @@ function openLevel(rank){
     document.getElementById("video").innerHTML = `
       <iframe src="${normalizeVideo(d.video)}" allowfullscreen></iframe>
     `;
-  } else {
+  }else{
     document.getElementById("video").innerHTML = `<div class="no-video">No video linked yet.</div>`;
   }
 
@@ -680,6 +662,13 @@ function openLevel(rank){
     <div class="stat">Level ID: ${escapeHTML(d.id)}</div>
     <div class="stat">Verifier: ${escapeHTML(d.verifier || "N/A")}</div>
   `;
+
+  if(isAdmin){
+    const stats = document.getElementById("stats");
+    stats.innerHTML += `
+      <div class="stat">Admin tools: available</div>
+    `;
+  }
 }
 
 function back(){
@@ -700,6 +689,26 @@ function moveLevel(rank, direction){
   renderQueue();
 }
 
+function deleteLevel(rank){
+  if(!isAdmin) return;
+  const d = levels.find(x => x.rank === rank);
+  if(!d) return;
+
+  if(!confirm(`Delete #${d.rank} – ${d.name}?`)) return;
+
+  levels = levels.filter(x => x.rank !== rank);
+  reindexLevels();
+  saveState();
+  populateLevelSelect();
+  renderList(searchEl.value);
+  renderQueue();
+
+  const title = document.getElementById("dTitle").textContent;
+  if(title.includes(d.name)){
+    back();
+  }
+}
+
 function renderQueue(){
   if(pending.length === 0){
     queueEl.innerHTML = `<div class="empty">No submissions waiting.</div>`;
@@ -707,7 +716,7 @@ function renderQueue(){
   }
 
   queueEl.innerHTML = pending.map(item => {
-    const label = item.type === "newLevel"
+    const title = item.type === "newLevel"
       ? `New level proposal: ${escapeHTML(item.newLevel?.name || "Unnamed")}`
       : `Record submission for: ${escapeHTML(item.levelName || "Unknown")}`;
 
@@ -715,7 +724,7 @@ function renderQueue(){
       <div class="queue-item">
         <div class="queue-top">
           <div>
-            <div class="queue-title">${label}</div>
+            <div class="queue-title">${title}</div>
             <div class="queue-meta">
               type: ${escapeHTML(item.type)} • submitted by ${escapeHTML(item.username)} • status: <strong>${escapeHTML(item.status)}</strong>
             </div>
@@ -761,7 +770,7 @@ function approveSubmission(id){
       id: item.newLevel.id || String(Date.now()),
       diff: item.newLevel.diff,
       points: item.newLevel.points || "0",
-      img: item.newLevel.img || makeThumb(item.newLevel.name || "New Level", "#64748b", "#111522"),
+      img: item.newLevel.img || "https://via.placeholder.com/320x180?text=New+Level",
       video: normalizeVideo(item.newLevel.video || ""),
       verifier: item.newLevel.verifier || "N/A"
     };
@@ -772,8 +781,7 @@ function approveSubmission(id){
 
   item.status = "approved";
   saveState();
-  renderList(searchEl.value);
-  renderQueue();
+  renderAll();
 }
 
 function rejectSubmission(id){
@@ -822,7 +830,7 @@ function submitForm(){
     item.levelRank = level.rank;
     item.levelName = level.name;
     item.levelId = level.id;
-  } else {
+  }else{
     const newName = document.getElementById("newName").value.trim();
     const newCreator = document.getElementById("newCreator").value.trim();
     const newDiff = document.getElementById("newDiff").value.trim();
@@ -855,7 +863,6 @@ function submitForm(){
   document.getElementById("recordLink").value = "";
   document.getElementById("rawFootage").value = "";
   document.getElementById("notes").value = "";
-
   document.getElementById("newName").value = "";
   document.getElementById("newCreator").value = "";
   document.getElementById("newDiff").value = "";
