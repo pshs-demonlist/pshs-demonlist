@@ -372,24 +372,29 @@
 
         <div class="grid" style="margin-top:12px;">
           <div>
-            <label class="muted">Difficulty</label>
-            <input id="newDiff" class="input" type="text" placeholder="Extreme Demon / Insane Demon / etc." />
+            <label class="muted">Level ID</label>
+            <input id="newLevelId" class="input" type="text" placeholder="e.g. 10565740" />
           </div>
           <div>
-            <label class="muted">Points</label>
-            <input id="newPoints" class="input" type="text" placeholder="23.99" />
+            <label class="muted">Difficulty</label>
+            <input id="newDiff" class="input" type="text" placeholder="Extreme Demon / Insane Demon / etc." />
           </div>
         </div>
 
         <div class="grid" style="margin-top:12px;">
           <div>
+            <label class="muted">Points</label>
+            <input id="newPoints" class="input" type="text" placeholder="23.99" />
+          </div>
+          <div>
             <label class="muted">Thumbnail image URL</label>
             <input id="newImg" class="input" type="text" placeholder="Image URL" />
           </div>
-          <div>
-            <label class="muted">Video URL</label>
-            <input id="newVideo" class="input" type="text" placeholder="YouTube embed or Drive preview URL" />
-          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <label class="muted">Video URL</label>
+          <input id="newVideo" class="input" type="text" placeholder="YouTube embed or Drive preview URL" />
         </div>
       </div>
 
@@ -411,9 +416,7 @@
     <div class="back" onclick="back()">← Back to list</div>
     <h2 id="dTitle"></h2>
     <div id="dInfo" class="sub"></div>
-
     <div class="video" id="video"></div>
-
     <div class="stats" id="stats"></div>
   </div>
 </div>
@@ -460,9 +463,9 @@ function makeThumb(title, accent = "#ff4b4b", accent2 = "#111522") {
   return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
 }
 
-const STORAGE_LEVELS = "pshs_demonlist_levels_v4";
-const STORAGE_PENDING = "pshs_demonlist_pending_v4";
-const STORAGE_ADMIN = "pshs_admin_v4";
+const STORAGE_LEVELS = "pshs_demonlist_levels_v5";
+const STORAGE_PENDING = "pshs_demonlist_pending_v5";
+const STORAGE_ADMIN = "pshs_admin_v5";
 
 let isAdmin = localStorage.getItem(STORAGE_ADMIN) === "1";
 
@@ -496,7 +499,7 @@ const defaultLevels = [
     id: "7054561",
     diff: "Insane Demon",
     points: "15.94",
-    img: "https://imgs.search.brave.com/XC2vLZuw9oqam9HAbokfUZFRYwr0y8z8nLuVzcuxEME/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9B/bXlocnJfZmFVZy9t/YXhyZXNkZWZhdWx0/LmpwZw",
+    img: "https://imgs.search.brave.com/XC2vLZuw9oqam9HAbokfUZFRYwr0y8z8nLuVzcuxEME/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9B/bXlocnJfZmFVZ2Uv/bWF4cmVzZGVmYXVsdC5qcGc",
     video: "https://www.youtube.com/embed/N05ijX3vz9U",
     victorList: ["sadboi202"]
   },
@@ -559,10 +562,10 @@ function loadJSON(key, fallback){
 
 function normalizeLevels(arr){
   return arr.map((d, i) => ({
-    rank: d.rank ?? i + 1,
+    rank: Number(d.rank ?? i + 1),
     name: d.name ?? "Unnamed",
     creator: d.creator ?? "Unknown",
-    id: d.id ?? String(Date.now() + i),
+    id: String(d.id ?? String(Date.now() + i)),
     diff: d.diff ?? "Unknown",
     points: d.points ?? "0",
     img: d.img ?? makeThumb(d.name ?? "Level"),
@@ -599,12 +602,6 @@ function victorText(list){
   return list && list.length ? list.join(", ") : "N/A";
 }
 
-function updateAdminStatus(){
-  adminStatus.textContent = isAdmin
-    ? "Admin mode is ON. Move buttons, delete buttons, and moderation controls are visible."
-    : "Admin mode is OFF.";
-}
-
 function loginAdmin(){
   const pass = prompt("Admin password:");
   if(pass === null) return;
@@ -622,6 +619,12 @@ function logoutAdmin(){
   isAdmin = false;
   saveState();
   renderAll();
+}
+
+function updateAdminStatus(){
+  adminStatus.textContent = isAdmin
+    ? "Admin mode is ON."
+    : "Admin mode is OFF.";
 }
 
 function populateLevelSelect(){
@@ -754,7 +757,7 @@ function renderQueue(){
 
         ${item.type === "newLevel" ? `
           <div class="queue-meta" style="margin-top:8px;">
-            creator: ${escapeHTML(item.newLevel.creator)} • diff: ${escapeHTML(item.newLevel.diff)} • points: ${escapeHTML(item.newLevel.points)}
+            creator: ${escapeHTML(item.newLevel.creator)} • ID: ${escapeHTML(item.newLevel.id)} • diff: ${escapeHTML(item.newLevel.diff)} • points: ${escapeHTML(item.newLevel.points)}
           </div>
         ` : `
           <div class="queue-meta" style="margin-top:8px;">
@@ -785,7 +788,7 @@ function approveSubmission(id){
       rank: levels.length + 1,
       name: item.newLevel.name,
       creator: item.newLevel.creator,
-      id: item.newLevel.id || String(Date.now()),
+      id: item.newLevel.id,
       diff: item.newLevel.diff,
       points: item.newLevel.points || "0",
       img: item.newLevel.img || makeThumb(item.newLevel.name || "New Level", "#64748b", "#111522"),
@@ -861,19 +864,21 @@ function submitForm(){
   }else{
     const newName = document.getElementById("newName").value.trim();
     const newCreator = document.getElementById("newCreator").value.trim();
+    const newLevelId = document.getElementById("newLevelId").value.trim();
     const newDiff = document.getElementById("newDiff").value.trim();
     const newPoints = document.getElementById("newPoints").value.trim();
     const newImg = document.getElementById("newImg").value.trim();
     const newVideo = document.getElementById("newVideo").value.trim();
 
-    if(!newName || !newCreator || !newDiff){
-      alert("Fill in at least level name, creator, and difficulty for a new level.");
+    if(!newName || !newCreator || !newLevelId || !newDiff){
+      alert("Fill in level name, creator, level ID, and difficulty for a new level.");
       return;
     }
 
     item.newLevel = {
       name: newName,
       creator: newCreator,
+      id: newLevelId,
       diff: newDiff,
       points: newPoints || "0",
       img: newImg || "",
@@ -891,6 +896,7 @@ function submitForm(){
   document.getElementById("notes").value = "";
   document.getElementById("newName").value = "";
   document.getElementById("newCreator").value = "";
+  document.getElementById("newLevelId").value = "";
   document.getElementById("newDiff").value = "";
   document.getElementById("newPoints").value = "";
   document.getElementById("newImg").value = "";
