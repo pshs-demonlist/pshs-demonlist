@@ -858,7 +858,6 @@ function submitForm() {
       alert("Pick a level first.");
       return;
     }
-
     item.levelRank = level.rank;
     item.levelName = level.name;
     item.levelId = level.id;
@@ -890,30 +889,6 @@ function submitForm() {
   pending.unshift(item);
   saveState();
   renderQueue();
-
-  document.getElementById("username").value = "";
-  document.getElementById("recordLink").value = "";
-  document.getElementById("rawFootage").value = "";
-  document.getElementById("notes").value = "";
-  document.getElementById("newName").value = "";
-  document.getElementById("newCreator").value = "";
-  document.getElementById("newLevelId").value = "";
-  document.getElementById("newDiff").value = "";
-  document.getElementById("newPoints").value = "";
-  document.getElementById("newImg").value = "";
-  document.getElementById("newVideo").value = "";
-
-  alert("Submission sent for review.");
-}
-
-const text = await res.text();
-
-console.log("STATUS:", res.status);
-console.log("RESPONSE:", text);
-    
-  } catch (err) {
-    console.error("Dispatch error:", err);
-  }
 
   document.getElementById("username").value = "";
   document.getElementById("recordLink").value = "";
