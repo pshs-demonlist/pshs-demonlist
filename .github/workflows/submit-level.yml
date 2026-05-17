@@ -4,6 +4,9 @@ on:
   repository_dispatch:
     types: [submit-level]
 
+permissions:
+  contents: write
+
 jobs:
   add-level:
     runs-on: ubuntu-latest
@@ -14,22 +17,22 @@ jobs:
 
       - name: Add level to pending.json
         run: |
-          node -e "
+          node <<'EOF'
           const fs = require('fs');
 
-          const newLevel = ${{ toJson(github.event.client_payload.level) }};
+          const item = JSON.parse(process.env.ITEM);
+          const data = JSON.parse(fs.readFileSync('pending.json', 'utf8'));
 
-          const data = JSON.parse(fs.readFileSync('pending.json','utf8'));
-
-          data.push(newLevel);
-
+          data.push(item);
           fs.writeFileSync('pending.json', JSON.stringify(data, null, 2));
-          "
+          EOF
+        env:
+          ITEM: ${{ toJson(github.event.client_payload.level) }}
 
       - name: Commit changes
         run: |
-          git config user.name 'pshs-bot'
-          git config user.email 'bot@users.noreply.github.com'
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add pending.json
-          git commit -m "New level submission"
+          git commit -m "New level submission" || echo "No changes to commit"
           git push
