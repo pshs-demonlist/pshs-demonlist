@@ -894,19 +894,19 @@ async function submitForm() {
     console.log("Sending dispatch...");
 
     const res = await fetch("https://api.github.com/repos/pshs-demonlist/pshs-demonlist/dispatches", {
-      method: "POST",
-      headers: {
-        "Accept": "application/vnd.github+json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        event_type: "submit-level",
-        client_payload: {
-          level: item
-        }
-      })
-    });
-
+  method: "POST",
+  headers: {
+    "Accept": "application/vnd.github+json",
+    "Content-Type": "application/json",
+    "Authorization": "Bearer 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"
+  },
+  body: JSON.stringify({
+    event_type: "submit-level",
+    client_payload: {
+      level: item
+    }
+  })
+});
     console.log("STATUS:", res.status);
     console.log("RESPONSE:", await res.text());
 
