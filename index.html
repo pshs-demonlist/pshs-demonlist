@@ -174,7 +174,8 @@ const demons = [
     id:"10565740",
     diff:"Extreme Demon",
     points:"23.99",
-    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+    img:"https://imgs.search.brave.com/r12GxqItNoTDHicWG1c54CGh3kWG884UMw2VCIymZrU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC93cDg5MjYy/MzguanBn"
+    video:"https://www.youtube.com/embed/vBBZvXb0HrA"
   },
   {
     rank:2,
@@ -183,7 +184,8 @@ const demons = [
     id:"3979721",
     diff:"Extreme Demon",
     points:"20.92",
-    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+    img:"https://imgs.search.brave.com/pbDTH9K3MkZ-MYgp5UH6N83UeHq4ORlPDyWIXMsml-4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeS1nYW1lcy5p/by9jYWNoZS9kYXRh/L2ltYWdlL2dhbWUv/Z2VvbWV0cnktZGFz/aC1jYXRhY2x5c20t/bTMyMHgxOTAud2Vi/cA"
+    video:"https://www.youtube.com/embed/8x0gpGutHUE"
   },
   {
     rank:3,
@@ -192,7 +194,8 @@ const demons = [
     id:"7054561",
     diff:"Insane Demon",
     points:"15.94",
-    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+    img:"https://imgs.search.brave.com/XC2vLZuw9oqam9HAbokfUZFRYwr0y8z8nLuVzcuxEME/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9B/bXlocnJfZmFVZy9t/YXhyZXNkZWZhdWx0/LmpwZw"
+    video:"https://www.youtube.com/embed/N05ijX3vz9U"
   },
   {
     rank:4,
@@ -201,7 +204,8 @@ const demons = [
     id:"533927",
     diff:"Hard Demon",
     points:"11.16",
-    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+    img:"https://imgs.search.brave.com/MPJ9w0-ZTvqphSCuEYGqWFUlxPma3WAO-8g-2kzsz4A/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlv/L2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1uaW5l/LWNpcmNsZXMtbTE5/MngxMDgud2VicA"
+    video:"https://www.youtube.com/embed/DO36t7DV0ec"
   },
   {
     rank:5,
@@ -210,7 +214,8 @@ const demons = [
     id:"6939821",
     diff:"Hard Demon",
     points:"11.14",
-    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+    img:"https://imgs.search.brave.com/PtElB1kO3lVJRFd-i07TXhaAYOFuBepTEMDaAQ67tGc/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlv/L2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1qYXdi/cmVha2VyLW0xOTJ4/MTA4LndlYnA"
+    video:"https://drive.google.com/file/d/1HYy3aCN4TvQTkoid7fDHAD12guzGlRBe/preview"
   },
   {
     rank:6,
@@ -228,7 +233,8 @@ const demons = [
     id:"493898",
     diff:"Medium Demon",
     points:"5.91",
-    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+    img:"https://imgs.search.brave.com/rfgpinVitTV25ZVcwtl4x8v9gyFBsys_skODwytdwyI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWRhc2h3YXZl/LmNvbS9jYWNoZS9k/YXRhL2ltYWdlL2dh/bWUvbWF4cmVzZGVm/YXVsdDM2LW0zMjB4/MTgwLndlYnA"
+    video:"https://drive.google.com/file/d/1IBfQPdzNedlEc2r_9eF2PjP-yuToTvYZ/preview"
   }
 ];
 
@@ -260,8 +266,8 @@ function openLevel(rank){
   document.getElementById("dInfo").textContent = `published by ${d.creator} • ID ${d.id}`;
 
   document.getElementById("video").innerHTML = `
-    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>
-  `;
+  <iframe src="${d.video}" allowfullscreen></iframe>
+`;
 
   document.getElementById("stats").innerHTML = `
     <div class="stat">Difficulty: ${d.diff}</div>
