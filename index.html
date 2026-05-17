@@ -829,14 +829,14 @@ function deleteSubmission(id){
   renderQueue();
 }
 
-function submitForm(){
+async function submitForm() {
   const type = submissionTypeEl.value;
   const username = document.getElementById("username").value.trim();
   const recordLink = document.getElementById("recordLink").value.trim();
   const rawFootage = document.getElementById("rawFootage").value.trim();
   const notes = document.getElementById("notes").value.trim();
 
-  if(!username || !recordLink || !rawFootage){
+  if (!username || !recordLink || !rawFootage) {
     alert("Fill in username, record link, and raw footage.");
     return;
   }
@@ -852,16 +852,16 @@ function submitForm(){
     createdAt: new Date().toISOString()
   };
 
-  if(type === "record"){
+  if (type === "record") {
     const level = levels.find(x => String(x.rank) === existingLevelEl.value);
-    if(!level){
+    if (!level) {
       alert("Pick a level first.");
       return;
     }
     item.levelRank = level.rank;
     item.levelName = level.name;
     item.levelId = level.id;
-  }else{
+  } else {
     const newName = document.getElementById("newName").value.trim();
     const newCreator = document.getElementById("newCreator").value.trim();
     const newLevelId = document.getElementById("newLevelId").value.trim();
@@ -870,7 +870,7 @@ function submitForm(){
     const newImg = document.getElementById("newImg").value.trim();
     const newVideo = document.getElementById("newVideo").value.trim();
 
-    if(!newName || !newCreator || !newLevelId || !newDiff){
+    if (!newName || !newCreator || !newLevelId || !newDiff) {
       alert("Fill in level name, creator, level ID, and difficulty for a new level.");
       return;
     }
@@ -889,6 +889,30 @@ function submitForm(){
   pending.unshift(item);
   saveState();
   renderQueue();
+
+  try {
+    console.log("Sending dispatch...");
+
+    const res = await fetch("https://api.github.com/repos/pshs-demonlist/pshs-demonlist/dispatches", {
+      method: "POST",
+      headers: {
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        event_type: "submit-level",
+        client_payload: {
+          level: item
+        }
+      })
+    });
+
+    console.log("STATUS:", res.status);
+    console.log("RESPONSE:", await res.text());
+
+  } catch (err) {
+    console.error("Dispatch error:", err);
+  }
 
   document.getElementById("username").value = "";
   document.getElementById("recordLink").value = "";
