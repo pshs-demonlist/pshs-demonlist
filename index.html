@@ -907,9 +907,12 @@ async function submitForm() {
     }
   })
 });
-    console.log("STATUS:", res.status);
-    console.log("RESPONSE:", await res.text());
 
+const text = await res.text();
+
+console.log("STATUS:", res.status);
+console.log("RESPONSE:", text);
+    
   } catch (err) {
     console.error("Dispatch error:", err);
   }
