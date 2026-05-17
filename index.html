@@ -1,302 +1,389 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PSHS Demonlist</title>
-  <meta name="description" content="A community demonlist archive for PSHS players and completed demons." />
+  <title>PSHS-MC Demonlist</title>
   <style>
     :root{
-      --bg:#0b1020;
-      --panel:#111830;
-      --panel-2:#0f1530;
-      --text:#e8ecff;
-      --muted:#9aa6d6;
-      --line:rgba(255,255,255,.08);
-      --accent:#7c8cff;
-      --accent-2:#43d9b5;
-      --danger:#ff6b8b;
-      --warning:#ffd166;
-      --shadow: 0 20px 50px rgba(0,0,0,.32);
-      --radius: 22px;
+      --bg:#0b0d12;
+      --panel:#111522;
+      --panel-2:#0f1320;
+      --line:#1e2438;
+      --text:#eef2ff;
+      --muted:#9aa3b2;
+      --accent:#ff4b4b;
+      --accent-2:#2d3550;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:
-      radial-gradient(1200px 700px at 20% 0%, rgba(124,140,255,.20), transparent 55%),
-      radial-gradient(900px 500px at 100% 20%, rgba(67,217,181,.14), transparent 50%),
-      linear-gradient(180deg, #09101f 0%, #070b16 100%);
-      color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-    a{color:inherit;text-decoration:none}
-    .wrap{max-width:1200px;margin:0 auto;padding:28px 18px 48px}
-    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:stretch}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.025));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter: blur(14px)}
-    .hero-main{padding:28px}
-    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:13px}
-    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent-2);box-shadow:0 0 18px var(--accent-2)}
-    h1{margin:14px 0 10px;font-size:clamp(34px,5vw,58px);line-height:.98;letter-spacing:-.04em}
-    .lead{margin:0;color:var(--muted);font-size:16px;line-height:1.6;max-width:62ch}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
-    .stat{padding:16px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
-    .stat .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
-    .stat .value{font-size:22px;font-weight:800;margin-top:6px}
-    .stat .sub{margin-top:4px;font-size:12px;color:var(--muted)}
-    .hero-side{padding:22px;display:flex;flex-direction:column;gap:14px}
-    .hero-side .box{padding:18px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
-    .hero-side h3{margin:0 0 10px;font-size:16px}
-    .hero-side p{margin:0;color:var(--muted);line-height:1.6;font-size:14px}
-    .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-    .pill{padding:7px 10px;border-radius:999px;background:rgba(124,140,255,.13);border:1px solid rgba(124,140,255,.25);font-size:13px;color:#cfd6ff}
-    .toolbar{margin:18px 0;display:grid;grid-template-columns:1.2fr .7fr .7fr .7fr;gap:10px}
-    .input, select, button{
-      width:100%;border-radius:16px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);color:var(--text);padding:14px 14px;
-      font:inherit;outline:none;
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #0b0d12 0%, #0a0c10 100%);
+      color: var(--text);
     }
-    .input::placeholder{color:#7f8ab8}
-    button{cursor:pointer;font-weight:700}
-    button.primary{background:linear-gradient(135deg, var(--accent), #9c7cff);border:none}
-    button.secondary{background:rgba(255,255,255,.04)}
-    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
-    .panel{padding:18px}
-    .section-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
-    .section-title h2{margin:0;font-size:22px}
-    .section-title span{color:var(--muted);font-size:13px}
-    table{width:100%;border-collapse:separate;border-spacing:0 10px}
-    thead th{font-size:12px;color:var(--muted);text-align:left;padding:0 14px 6px}
-    tbody tr{background:rgba(255,255,255,.03);border:1px solid var(--line)}
-    tbody td{padding:14px;border-top:1px solid transparent;border-bottom:1px solid transparent}
-    tbody tr td:first-child{border-left:1px solid var(--line);border-top-left-radius:16px;border-bottom-left-radius:16px}
-    tbody tr td:last-child{border-right:1px solid var(--line);border-top-right-radius:16px;border-bottom-right-radius:16px}
-    .rank{font-weight:800;color:#fff}
-    .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700}
-    .extreme{background:rgba(255,107,139,.14);color:#ffb8c7;border:1px solid rgba(255,107,139,.25)}
-    .insane{background:rgba(255,209,102,.14);color:#ffe3a3;border:1px solid rgba(255,209,102,.24)}
-    .hard{background:rgba(124,140,255,.14);color:#d8ddff;border:1px solid rgba(124,140,255,.24)}
-    .medium{background:rgba(67,217,181,.12);color:#baf5e6;border:1px solid rgba(67,217,181,.24)}
-    .small{color:var(--muted);font-size:13px}
-    .list{display:flex;flex-direction:column;gap:10px}
-    .player{
-      padding:14px;border-radius:18px;background:rgba(255,255,255,.03);
-      border:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:center
+
+    .topbar {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    .player strong{display:block;font-size:15px}
-    .player .meta{color:var(--muted);font-size:13px;margin-top:4px}
-    .score{font-size:22px;font-weight:900}
-    .footer{margin-top:16px;color:var(--muted);font-size:13px;text-align:center}
-    .empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.16);border-radius:18px}
-    .muted-link{color:#c9d1ff;text-decoration:underline;text-underline-offset:3px}
-    @media (max-width: 980px){
-      .hero,.grid,.toolbar,.stats{grid-template-columns:1fr}
+
+    .topbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.1;
+      letter-spacing: .3px;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .nav a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover {
+      border-color: var(--line);
+      background: rgba(255,255,255,.06);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 24px auto 40px;
+      padding: 0 18px;
+    }
+
+    .hero {
+      background: rgba(255,255,255,.02);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .hero h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 900px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .search {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #151a2b;
+      color: var(--text);
+      outline: none;
+      font-size: 15px;
+    }
+
+    .search::placeholder { color: #7f8798; }
+
+    .counter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #111827;
+      color: var(--muted);
+      font-size: 13px;
+      min-height: 46px;
+      white-space: nowrap;
+    }
+
+    .list {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,.02);
+    }
+
+    .list-header,
+    .row {
+      display: grid;
+      grid-template-columns: 70px 1.7fr 1.1fr 160px 150px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .list-header {
+      background: #0d1120;
+      color: #c4cad8;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .row {
+      padding: 12px 14px;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--line);
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    .row:hover {
+      background: #171c2d;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .rank {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    .level {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.15;
+    }
+
+    .creator {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .id {
+      color: #a9b2c4;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .score {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .badge {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,.08);
+      white-space: nowrap;
+    }
+
+    .extreme { background: rgba(255,75,75,.15); color: #ff8a8a; }
+    .insane  { background: rgba(255,149,0,.14); color: #ffb357; }
+    .hard    { background: rgba(255,210,0,.12); color: #ffe16a; }
+    .medium  { background: rgba(86,170,255,.14); color: #8cc4ff; }
+
+    .empty {
+      display: none;
+      padding: 24px 18px;
+      color: var(--muted);
+      text-align: center;
+      background: var(--panel-2);
+    }
+
+    .footer {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .list-header {
+        display: none;
+      }
+
+      .row {
+        grid-template-columns: 52px 1fr;
+        grid-template-areas:
+          "rank level"
+          "rank creator"
+          "id badge"
+          "score score";
+        row-gap: 6px;
+        padding: 14px;
+      }
+
+      .rank { grid-area: rank; font-size: 18px; }
+      .level { grid-area: level; }
+      .creator { grid-area: creator; }
+      .id { grid-area: id; }
+      .badge { grid-area: badge; justify-self: end; }
+      .score { grid-area: score; text-align: left; }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .counter {
+        min-height: auto;
+        padding: 10px 14px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <div class="card hero-main">
-        <div class="eyebrow"><span class="dot"></span> PSHS Demonlist Archive</div>
-        <h1>Hardest demons beaten by PSHS players.</h1>
-        <p class="lead">
-          A clean Pointercrate-style site for your school/community. Search demons, sort by difficulty, and track who beat what.
-          Built as a simple static project so you can drop it straight into GitHub Pages.
-        </p>
-        <div class="stats" id="stats"></div>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>PSHS-MC Demonlist</h1>
+        <p>Geometry Dash hardest demons, GitHub Pages edition</p>
       </div>
-      <aside class="card hero-side">
-        <div class="box">
-          <h3>What is included</h3>
-          <p>Demon list, player leaderboard, filtering, and a starter structure for later adding submissions, proofs, and moderation.</p>
-          <div class="pill-row">
-            <span class="pill">GitHub Pages</span>
-            <span class="pill">Static HTML</span>
-            <span class="pill">No backend</span>
-            <span class="pill">Easy to edit</span>
-          </div>
-        </div>
-        <div class="box">
-          <h3>Current list</h3>
-          <p>Bloodbath, Cataclysm, Poltergeist, Nine Circles, Jawbreaker, Thermal Madness, Solar Circles.</p>
-        </div>
-      </aside>
+      <nav class="nav">
+        <a href="#mainlist">Main List</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <section class="hero" id="about">
+      <h2>Current Demonlist</h2>
+      <p>
+        This is a clean Pointercrate-style layout for your school demonlist.
+        It is fully static, easy to edit, and works on GitHub Pages with no backend.
+      </p>
     </section>
 
     <div class="toolbar">
-      <input class="input" id="search" placeholder="Search demon, victor, or difficulty..." />
-      <select id="difficulty">
-        <option value="all">All difficulties</option>
-        <option value="Extreme Demon">Extreme Demon</option>
-        <option value="Insane Demon">Insane Demon</option>
-        <option value="Hard Demon">Hard Demon</option>
-        <option value="Medium Demon">Medium Demon</option>
-      </select>
-      <select id="sort">
-        <option value="rank">Sort by rank</option>
-        <option value="points">Sort by points</option>
-        <option value="name">Sort by name</option>
-      </select>
-      <button class="primary" id="reset">Reset</button>
+      <input class="search" id="search" type="text" placeholder="Search by level, creator, difficulty, or ID..." />
+      <div class="counter" id="counter">7 entries</div>
     </div>
 
-    <section class="grid">
-      <div class="card panel">
-        <div class="section-title">
-          <h2>Demon List</h2>
-          <span id="countLabel"></span>
-        </div>
-        <div id="listWrap"></div>
+    <section class="list" id="mainlist">
+      <div class="list-header">
+        <div>Rank</div>
+        <div>Level</div>
+        <div>Creator</div>
+        <div>ID</div>
+        <div style="text-align:right;">Score</div>
       </div>
-
-      <div class="card panel">
-        <div class="section-title">
-          <h2>Top Victors</h2>
-          <span>Points from the listed demons</span>
-        </div>
-        <div class="list" id="playerList"></div>
-        <p class="footer">
-          Edit <code>script.js</code> or the JSON data inside this file to add more demons and players.
-        </p>
-      </div>
+      <div id="rows"></div>
+      <div class="empty" id="empty">No results found.</div>
     </section>
-  </div>
+
+    <div class="footer">
+      Made for PSHS-MC • Static HTML • GitHub Pages ready
+    </div>
+  </main>
 
   <script>
     const demons = [
-      { rank: 1, name: "Bloodbath", victor: "Riot", id: 10565740, points: 23.99, difficulty: "Extreme Demon" },
-      { rank: 2, name: "Cataclysm", victor: "GGboy", id: 3979721, points: 20.92, difficulty: "Extreme Demon" },
-      { rank: 3, name: "Poltergeist", victor: "AndromedaGMD", id: 7054561, points: 15.94, difficulty: "Insane Demon" },
-      { rank: 4, name: "Nine Circles", victor: "Zobros", id: 533927, points: 11.16, difficulty: "Hard Demon" },
-      { rank: 5, name: "Jawbreaker", victor: "ZenthicAlpha", id: 6939821, points: 11.14, difficulty: "Hard Demon" },
-      { rank: 6, name: "Thermal Madness", victor: "ManiacDan", id: 111205474, points: 8.01, difficulty: "Hard Demon" },
-      { rank: 7, name: "Solar Circles", victor: "D4rkGryf", id: 493898, points: 5.91, difficulty: "Medium Demon" },
+      { rank: 1, level: "Bloodbath", creator: "Riot", id: "10565740", score: "23.99", difficulty: "Extreme Demon", cls: "extreme" },
+      { rank: 2, level: "Cataclysm", creator: "GGboy", id: "3979721", score: "20.92", difficulty: "Extreme Demon", cls: "extreme" },
+      { rank: 3, level: "Poltergeist", creator: "AndromedaGMD", id: "7054561", score: "15.94", difficulty: "Insane Demon", cls: "insane" },
+      { rank: 4, level: "Nine Circles", creator: "Zobros", id: "533927", score: "11.16", difficulty: "Hard Demon", cls: "hard" },
+      { rank: 5, level: "Jawbreaker", creator: "ZenthicAlpha", id: "6939821", score: "11.14", difficulty: "Hard Demon", cls: "hard" },
+      { rank: 6, level: "Thermal Madness", creator: "ManiacDan", id: "111205474", score: "8.01", difficulty: "Hard Demon", cls: "hard" },
+      { rank: 7, level: "Solar Circles", creator: "D4rkGryf", id: "493898", score: "5.91", difficulty: "Medium Demon", cls: "medium" },
     ];
 
-    const pointsByVictor = demons.reduce((acc, demon) => {
-      acc[demon.victor] = (acc[demon.victor] || 0) + demon.points;
-      return acc;
-    }, {});
+    const rowsEl = document.getElementById("rows");
+    const searchEl = document.getElementById("search");
+    const counterEl = document.getElementById("counter");
+    const emptyEl = document.getElementById("empty");
 
-    const els = {
-      stats: document.getElementById("stats"),
-      search: document.getElementById("search"),
-      difficulty: document.getElementById("difficulty"),
-      sort: document.getElementById("sort"),
-      reset: document.getElementById("reset"),
-      listWrap: document.getElementById("listWrap"),
-      playerList: document.getElementById("playerList"),
-      countLabel: document.getElementById("countLabel"),
-    };
-
-    function fmt(n){ return Number(n).toFixed(2); }
-
-    function badgeClass(difficulty){
-      if (difficulty.includes("Extreme")) return "badge extreme";
-      if (difficulty.includes("Insane")) return "badge insane";
-      if (difficulty.includes("Hard")) return "badge hard";
-      return "badge medium";
-    }
-
-    function renderStats(){
-      const totalPlayers = Object.keys(pointsByVictor).length;
-      const hardest = demons[0];
-      const avg = demons.reduce((s,d)=>s + d.points, 0) / demons.length;
-      els.stats.innerHTML = [
-        ["Demons listed", demons.length, "manual entries"],
-        ["Unique victors", totalPlayers, "players in archive"],
-        ["Hardest demon", hardest.name, hardest.difficulty],
-        ["Avg points", fmt(avg), "per listed demon"],
-      ].map(([label, value, sub]) => `
-        <div class="stat">
-          <div class="label">${label}</div>
-          <div class="value">${value}</div>
-          <div class="sub">${sub}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderPlayers(){
-      const players = Object.entries(pointsByVictor)
-        .map(([name, points]) => ({ name, points }))
-        .sort((a,b) => b.points - a.points);
-
-      els.playerList.innerHTML = players.map((p, i) => `
-        <div class="player">
+    function render(list) {
+      rowsEl.innerHTML = list.map(d => `
+        <article class="row">
+          <div class="rank">#${d.rank}</div>
           <div>
-            <strong>#${i+1} ${p.name}</strong>
-            <div class="meta">${demons.filter(d => d.victor === p.name).length} completion(s)</div>
+            <div class="level">${d.level}</div>
+            <div class="creator">by ${d.creator}</div>
           </div>
-          <div class="score">${fmt(p.points)}</div>
-        </div>
+          <div class="id">${d.id}</div>
+          <div class="badge ${d.cls}">${d.difficulty}</div>
+          <div class="score">${d.score}</div>
+        </article>
       `).join("");
+
+      counterEl.textContent = `${list.length} entr${list.length === 1 ? "y" : "ies"}`;
+      emptyEl.style.display = list.length ? "none" : "block";
     }
 
-    function renderList(){
-      const q = els.search.value.trim().toLowerCase();
-      const diff = els.difficulty.value;
-      const sort = els.sort.value;
+    function filterList() {
+      const q = searchEl.value.trim().toLowerCase();
+      if (!q) return render(demons);
 
-      let rows = [...demons].filter(d => {
-        const hay = `${d.name} ${d.victor} ${d.difficulty} ${d.id}`.toLowerCase();
-        const matchQ = !q || hay.includes(q);
-        const matchD = diff === "all" || d.difficulty === diff;
-        return matchQ && matchD;
+      const filtered = demons.filter(d => {
+        return [
+          d.rank,
+          d.level,
+          d.creator,
+          d.id,
+          d.score,
+          d.difficulty
+        ].some(v => String(v).toLowerCase().includes(q));
       });
 
-      if (sort === "points") rows.sort((a,b) => b.points - a.points);
-      if (sort === "name") rows.sort((a,b) => a.name.localeCompare(b.name));
-      if (sort === "rank") rows.sort((a,b) => a.rank - b.rank);
-
-      els.countLabel.textContent = `${rows.length} result(s)`;
-
-      if (!rows.length){
-        els.listWrap.innerHTML = `<div class="empty">No demons match this filter.</div>`;
-        return;
-      }
-
-      els.listWrap.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th style="width:72px">#</th>
-              <th>Demon</th>
-              <th>Victor</th>
-              <th style="width:150px">Difficulty</th>
-              <th style="width:90px">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(d => `
-              <tr>
-                <td class="rank">${d.rank}</td>
-                <td>
-                  <div style="font-weight:800">${d.name}</div>
-                  <div class="small">ID: ${d.id}</div>
-                </td>
-                <td>${d.victor}</td>
-                <td><span class="${badgeClass(d.difficulty)}">${d.difficulty}</span></td>
-                <td><strong>${fmt(d.points)}</strong></td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
+      render(filtered);
     }
 
-    function bind(){
-      els.search.addEventListener("input", renderList);
-      els.difficulty.addEventListener("change", renderList);
-      els.sort.addEventListener("change", renderList);
-      els.reset.addEventListener("click", () => {
-        els.search.value = "";
-        els.difficulty.value = "all";
-        els.sort.value = "rank";
-        renderList();
-      });
-    }
-
-    renderStats();
-    renderPlayers();
-    renderList();
-    bind();
+    searchEl.addEventListener("input", filterList);
+    render(demons);
   </script>
 </body>
 </html>
