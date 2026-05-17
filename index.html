@@ -12,7 +12,11 @@
     --text:#e9eefc;
     --muted:#9aa3b2;
     --accent:#ff4b4b;
+    --good:#36d399;
+    --warn:#fbbf24;
   }
+
+  *{ box-sizing:border-box; }
 
   body{
     margin:0;
@@ -33,32 +37,53 @@
   }
 
   .wrap{
-    max-width:1000px;
+    max-width:1100px;
     margin:20px auto;
-    padding:0 16px;
+    padding:0 16px 32px;
   }
 
-  #search{
+  .section{
+    background:#0f1320;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:16px;
+  }
+
+  .section h3{
+    margin:0 0 12px;
+    font-size:16px;
+  }
+
+  #search,
+  .input,
+  .select,
+  .textarea{
     width:100%;
-    box-sizing:border-box;
     padding:12px 14px;
-    margin-bottom:12px;
     border-radius:8px;
     border:1px solid var(--line);
-    background:#0f1320;
+    background:#0b0f1a;
     color:var(--text);
     outline:none;
     font-size:14px;
   }
 
-  #search::placeholder{
+  .textarea{
+    min-height:90px;
+    resize:vertical;
+  }
+
+  #search::placeholder,
+  .input::placeholder,
+  .textarea::placeholder{
     color:var(--muted);
   }
 
-  .list{
-    border:1px solid var(--line);
-    border-radius:10px;
-    overflow:hidden;
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
   }
 
   .row{
@@ -71,9 +96,7 @@
     transition:.15s;
   }
 
-  .row:hover{
-    background:#171c2d;
-  }
+  .row:hover{ background:#171c2d; }
 
   .rank{
     width:60px;
@@ -121,9 +144,18 @@
     margin-top:6px;
   }
 
-  .detail{
-    display:none;
+  .badge{
+    display:inline-block;
+    margin-top:8px;
+    padding:4px 8px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    font-size:12px;
+    color:#dce4f5;
+    background:#0b0f1a;
   }
+
+  .detail{ display:none; }
 
   .back{
     color:var(--muted);
@@ -156,7 +188,7 @@
 
   .stats{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(4,1fr);
     gap:10px;
     margin-top:14px;
     font-size:13px;
@@ -170,6 +202,73 @@
     border-radius:8px;
   }
 
+  .actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  }
+
+  .btn{
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    background:#1b2238;
+    color:var(--text);
+    cursor:pointer;
+    font-weight:700;
+  }
+
+  .btn:hover{ filter:brightness(1.08); }
+
+  .btn-primary{ background:#2d3a63; }
+  .btn-good{ background:#245b45; }
+  .btn-danger{ background:#662f36; }
+
+  .muted{
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  .queue-item{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px;
+    background:#0b0f1a;
+    margin-bottom:10px;
+  }
+
+  .queue-top{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+
+  .queue-title{
+    font-weight:700;
+  }
+
+  .queue-meta{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  .queue-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+
+  .divider{
+    height:1px;
+    background:var(--line);
+    margin:14px 0;
+  }
+
   .empty{
     padding:16px;
     color:var(--muted);
@@ -179,16 +278,13 @@
   }
 
   @media (max-width:700px){
-    .row{
-      flex-direction:column;
-    }
-
+    .row{ flex-direction:column; }
     .thumb{
       width:100%;
       height:auto;
       aspect-ratio:16/9;
     }
-
+    .grid,
     .stats{
       grid-template-columns:1fr;
     }
@@ -200,13 +296,114 @@
 <header>PSHS-MC Demonlist</header>
 
 <div class="wrap">
-  <!-- LIST PAGE -->
   <div id="listPage">
-    <input id="search" type="text" placeholder="Search demons, creators, verifiers, or difficulty..." />
-    <div class="list" id="list"></div>
+    <div class="section">
+      <h3>Search</h3>
+      <input id="search" type="text" placeholder="Search demons, creators, verifiers, or difficulty..." />
+    </div>
+
+    <div class="section">
+      <h3>Levels</h3>
+      <div class="list" id="list"></div>
+    </div>
+
+    <div class="section">
+      <h3>Submit a record or propose a new level</h3>
+      <div class="grid">
+        <div>
+          <label class="muted">Submission type</label>
+          <select id="submissionType" class="select">
+            <option value="record">Record submission</option>
+            <option value="newLevel">New level proposal</option>
+          </select>
+        </div>
+        <div id="existingLevelWrap">
+          <label class="muted">Choose level</label>
+          <select id="existingLevel" class="select"></select>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:12px;">
+        <div>
+          <label class="muted">Username</label>
+          <input id="username" class="input" type="text" placeholder="Your username" />
+        </div>
+        <div>
+          <label class="muted">Record link (YouTube)</label>
+          <input id="recordLink" class="input" type="text" placeholder="https://www.youtube.com/watch?v=..." />
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:12px;">
+        <div>
+          <label class="muted">Raw footage link</label>
+          <input id="rawFootage" class="input" type="text" placeholder="Google Drive / YouTube / other link" />
+        </div>
+        <div>
+          <label class="muted">Notes (optional)</label>
+          <input id="notes" class="input" type="text" placeholder="Any extra notes" />
+        </div>
+      </div>
+
+      <div id="newLevelFields" style="display:none; margin-top:12px;">
+        <div class="divider"></div>
+        <h3 style="margin-top:0;">New level details</h3>
+
+        <div class="grid">
+          <div>
+            <label class="muted">Level name</label>
+            <input id="newName" class="input" type="text" placeholder="Level name" />
+          </div>
+          <div>
+            <label class="muted">Creator</label>
+            <input id="newCreator" class="input" type="text" placeholder="Level creator" />
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:12px;">
+          <div>
+            <label class="muted">Difficulty</label>
+            <input id="newDiff" class="input" type="text" placeholder="Extreme Demon / Insane Demon / etc." />
+          </div>
+          <div>
+            <label class="muted">Points</label>
+            <input id="newPoints" class="input" type="text" placeholder="23.99" />
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:12px;">
+          <div>
+            <label class="muted">Thumbnail image URL</label>
+            <input id="newImg" class="input" type="text" placeholder="Image URL" />
+          </div>
+          <div>
+            <label class="muted">Video URL</label>
+            <input id="newVideo" class="input" type="text" placeholder="YouTube embed or Drive preview URL" />
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <label class="muted">Verifier</label>
+          <input id="newVerifier" class="input" type="text" placeholder="Verifier / first victor" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="submitBtn">Send for review</button>
+      </div>
+
+      <div class="muted" style="margin-top:10px;">
+        New levels do not get added instantly. They stay in review until approved.
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Review queue</h3>
+      <div class="muted" style="margin-bottom:12px;">Approve or reject submissions here. New level proposals only enter the list after approval.</div>
+      <div id="queue"></div>
+    </div>
   </div>
 
-  <!-- DETAIL PAGE -->
   <div class="detail" id="detailPage">
     <div class="back" onclick="back()">← Back to list</div>
     <h2 id="dTitle"></h2>
@@ -219,7 +416,7 @@
 </div>
 
 <script>
-const demons = [
+const defaultLevels = [
   {
     rank: 1,
     name: "Bloodbath",
@@ -299,22 +496,73 @@ const demons = [
   }
 ];
 
+const STORAGE_LEVELS = "pshs_demonlist_levels";
+const STORAGE_PENDING = "pshs_demonlist_pending";
+
+let levels = loadJSON(STORAGE_LEVELS, defaultLevels);
+let pending = loadJSON(STORAGE_PENDING, []);
+
 const listEl = document.getElementById("list");
 const listPage = document.getElementById("listPage");
 const detailPage = document.getElementById("detailPage");
 const searchEl = document.getElementById("search");
+const queueEl = document.getElementById("queue");
+const submissionTypeEl = document.getElementById("submissionType");
+const newLevelFields = document.getElementById("newLevelFields");
+const existingLevelWrap = document.getElementById("existingLevelWrap");
+const existingLevelEl = document.getElementById("existingLevel");
+
+function loadJSON(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : fallback;
+  }catch{
+    return fallback;
+  }
+}
+
+function saveState(){
+  localStorage.setItem(STORAGE_LEVELS, JSON.stringify(levels));
+  localStorage.setItem(STORAGE_PENDING, JSON.stringify(pending));
+}
+
+function escapeHTML(str){
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function normalizeYouTube(url){
+  const s = String(url || "").trim();
+  if(!s) return "";
+  if(s.includes("/embed/")) return s;
+  const watchMatch = s.match(/[?&]v=([^&]+)/);
+  if(watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
+  return s;
+}
+
+function populateLevelSelect(){
+  existingLevelEl.innerHTML = levels.map(d =>
+    `<option value="${d.rank}">#${d.rank} - ${escapeHTML(d.name)}</option>`
+  ).join("");
+}
 
 function renderList(filter = ""){
   const q = filter.toLowerCase().trim();
 
-  const filtered = demons.filter(d =>
+  const filtered = levels.filter(d =>
     d.name.toLowerCase().includes(q) ||
     d.creator.toLowerCase().includes(q) ||
     d.diff.toLowerCase().includes(q) ||
-    d.verifier.toLowerCase().includes(q)
+    String(d.verifier || "").toLowerCase().includes(q)
   );
 
-  if (filtered.length === 0) {
+  if(filtered.length === 0){
     listEl.innerHTML = `<div class="empty">No demons found.</div>`;
     return;
   }
@@ -322,39 +570,41 @@ function renderList(filter = ""){
   listEl.innerHTML = filtered.map(d => `
     <div class="row" onclick="openLevel(${d.rank})">
       <div class="rank">#${d.rank}</div>
-      <div class="thumb"><img src="${d.img}" alt="${d.name}" /></div>
+      <div class="thumb"><img src="${escapeHTML(d.img)}" alt="${escapeHTML(d.name)}" /></div>
       <div class="info">
-        <div class="title">${d.name}</div>
-        <div class="sub">published by ${d.creator}</div>
-        <div class="sub">verified by ${d.verifier}</div>
-        <div class="points">${d.points} points • ${d.diff}</div>
+        <div class="title">${escapeHTML(d.name)}</div>
+        <div class="sub">published by ${escapeHTML(d.creator)}</div>
+        <div class="sub">verifier: ${escapeHTML(d.verifier || "N/A")}</div>
+        <div class="points">${escapeHTML(d.points)} points • ${escapeHTML(d.diff)}</div>
+        <div class="badge">ID ${escapeHTML(d.id)}</div>
       </div>
     </div>
   `).join("");
 }
 
 function openLevel(rank){
-  const d = demons.find(x => x.rank === rank);
-  if (!d) return;
+  const d = levels.find(x => x.rank === rank);
+  if(!d) return;
 
   listPage.style.display = "none";
   detailPage.style.display = "block";
 
   document.getElementById("dTitle").textContent = `#${d.rank} – ${d.name}`;
-  document.getElementById("dInfo").textContent = `published by ${d.creator} • verifier ${d.verifier} • ID ${d.id}`;
+  document.getElementById("dInfo").textContent = `published by ${d.creator} • verifier ${d.verifier || "N/A"} • ID ${d.id}`;
 
-  if (d.video && d.video.trim() !== "") {
+  if(d.video && d.video.trim() !== ""){
     document.getElementById("video").innerHTML = `
-      <iframe src="${d.video}" allowfullscreen></iframe>
+      <iframe src="${normalizeYouTube(d.video)}" allowfullscreen></iframe>
     `;
-  } else {
+  }else{
     document.getElementById("video").innerHTML = `<div class="no-video">No video linked yet.</div>`;
   }
 
   document.getElementById("stats").innerHTML = `
-    <div class="stat">Difficulty: ${d.diff}</div>
-    <div class="stat">Points: ${d.points}</div>
-    <div class="stat">Level ID: ${d.id}</div>
+    <div class="stat">Difficulty: ${escapeHTML(d.diff)}</div>
+    <div class="stat">Points: ${escapeHTML(d.points)}</div>
+    <div class="stat">Level ID: ${escapeHTML(d.id)}</div>
+    <div class="stat">Verifier: ${escapeHTML(d.verifier || "N/A")}</div>
   `;
 }
 
@@ -363,11 +613,188 @@ function back(){
   listPage.style.display = "block";
 }
 
-searchEl.addEventListener("input", e => {
-  renderList(e.target.value);
+function renderQueue(){
+  if(pending.length === 0){
+    queueEl.innerHTML = `<div class="empty">No submissions waiting.</div>`;
+    return;
+  }
+
+  queueEl.innerHTML = pending.map(item => {
+    const statusColor = item.status === "approved" ? "var(--good)" : item.status === "rejected" ? "#f87171" : "var(--warn)";
+    const title = item.type === "newLevel"
+      ? `New level proposal: ${item.newLevel.name}`
+      : `Record submission for: ${item.levelName}`;
+
+    return `
+      <div class="queue-item">
+        <div class="queue-top">
+          <div>
+            <div class="queue-title">${escapeHTML(title)}</div>
+            <div class="queue-meta">
+              type: ${escapeHTML(item.type)} • submitted by ${escapeHTML(item.username)} • status: <span style="color:${statusColor}; font-weight:700;">${escapeHTML(item.status)}</span>
+            </div>
+          </div>
+          <div class="badge">${escapeHTML(item.type)}</div>
+        </div>
+
+        <div class="queue-meta" style="margin-top:8px;">
+          record: ${escapeHTML(item.recordLink || "none")}<br/>
+          raw footage: ${escapeHTML(item.rawFootage || "none")}<br/>
+          notes: ${escapeHTML(item.notes || "none")}
+        </div>
+
+        ${item.type === "newLevel" ? `
+          <div class="queue-meta" style="margin-top:8px;">
+            creator: ${escapeHTML(item.newLevel.creator)} • diff: ${escapeHTML(item.newLevel.diff)} • points: ${escapeHTML(item.newLevel.points)} • verifier: ${escapeHTML(item.newLevel.verifier || "N/A")}
+          </div>
+        ` : ""}
+
+        <div class="queue-actions">
+          ${item.status === "pending" ? `
+            <button class="btn btn-good" onclick="approveSubmission('${item.id}')">Approve</button>
+            <button class="btn btn-danger" onclick="rejectSubmission('${item.id}')">Reject</button>
+          ` : `
+            <button class="btn" onclick="deleteSubmission('${item.id}')">Delete</button>
+          `}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function approveSubmission(id){
+  const item = pending.find(x => x.id === id);
+  if(!item) return;
+
+  if(item.type === "newLevel"){
+    const nextRank = levels.length + 1;
+    const newLevel = {
+      rank: nextRank,
+      name: item.newLevel.name,
+      creator: item.newLevel.creator,
+      id: item.newLevel.id || String(Date.now()),
+      diff: item.newLevel.diff,
+      points: item.newLevel.points,
+      img: item.newLevel.img || "https://via.placeholder.com/320x180?text=No+Image",
+      video: item.newLevel.video || "",
+      verifier: item.newLevel.verifier || "N/A"
+    };
+    levels.push(newLevel);
+    item.addedLevelRank = nextRank;
+    populateLevelSelect();
+  }
+
+  item.status = "approved";
+  saveState();
+  renderList(searchEl.value);
+  renderQueue();
+}
+
+function rejectSubmission(id){
+  const item = pending.find(x => x.id === id);
+  if(!item) return;
+  item.status = "rejected";
+  saveState();
+  renderQueue();
+}
+
+function deleteSubmission(id){
+  pending = pending.filter(x => x.id !== id);
+  saveState();
+  renderQueue();
+}
+
+function submitForm(){
+  const type = submissionTypeEl.value;
+  const username = document.getElementById("username").value.trim();
+  const recordLink = document.getElementById("recordLink").value.trim();
+  const rawFootage = document.getElementById("rawFootage").value.trim();
+  const notes = document.getElementById("notes").value.trim();
+
+  if(!username || !recordLink || !rawFootage){
+    alert("Fill in username, record link, and raw footage.");
+    return;
+  }
+
+  let item = {
+    id: String(Date.now()) + Math.random().toString(16).slice(2),
+    type,
+    username,
+    recordLink,
+    rawFootage,
+    notes,
+    status: "pending",
+    createdAt: new Date().toISOString()
+  };
+
+  if(type === "record"){
+    const level = levels.find(x => String(x.rank) === existingLevelEl.value);
+    if(!level){
+      alert("Pick a level first.");
+      return;
+    }
+    item.levelRank = level.rank;
+    item.levelName = level.name;
+    item.levelId = level.id;
+  }else{
+    const newName = document.getElementById("newName").value.trim();
+    const newCreator = document.getElementById("newCreator").value.trim();
+    const newDiff = document.getElementById("newDiff").value.trim();
+    const newPoints = document.getElementById("newPoints").value.trim();
+    const newImg = document.getElementById("newImg").value.trim();
+    const newVideo = document.getElementById("newVideo").value.trim();
+    const newVerifier = document.getElementById("newVerifier").value.trim();
+
+    if(!newName || !newCreator || !newDiff){
+      alert("Fill in at least level name, creator, and difficulty for a new level.");
+      return;
+    }
+
+    item.newLevel = {
+      name: newName,
+      creator: newCreator,
+      diff: newDiff,
+      points: newPoints || "0",
+      img: newImg || "",
+      video: newVideo || "",
+      verifier: newVerifier || "N/A"
+    };
+  }
+
+  pending.unshift(item);
+  saveState();
+  renderQueue();
+
+  document.getElementById("username").value = "";
+  document.getElementById("recordLink").value = "";
+  document.getElementById("rawFootage").value = "";
+  document.getElementById("notes").value = "";
+
+  if(type === "newLevel"){
+    document.getElementById("newName").value = "";
+    document.getElementById("newCreator").value = "";
+    document.getElementById("newDiff").value = "";
+    document.getElementById("newPoints").value = "";
+    document.getElementById("newImg").value = "";
+    document.getElementById("newVideo").value = "";
+    document.getElementById("newVerifier").value = "";
+  }
+
+  alert("Submission sent for review.");
+}
+
+submissionTypeEl.addEventListener("change", () => {
+  const isNew = submissionTypeEl.value === "newLevel";
+  newLevelFields.style.display = isNew ? "block" : "none";
+  existingLevelWrap.style.display = isNew ? "none" : "block";
 });
 
+document.getElementById("submitBtn").addEventListener("click", submitForm);
+searchEl.addEventListener("input", e => renderList(e.target.value));
+
+populateLevelSelect();
 renderList();
+renderQueue();
 </script>
 
 </body>
