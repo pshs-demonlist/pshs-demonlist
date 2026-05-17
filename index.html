@@ -173,6 +173,7 @@
     font-size:13px;
     color:var(--muted);
     margin-top:4px;
+    word-break:break-word;
   }
 
   .points{
@@ -308,7 +309,7 @@
 
     <div class="section">
       <h3>Search</h3>
-      <input id="search" type="text" placeholder="Search demons, creators, verifiers, or difficulty..." />
+      <input id="search" type="text" placeholder="Search demons, creators, victor lists, or difficulty..." />
     </div>
 
     <div class="section">
@@ -390,18 +391,13 @@
             <input id="newVideo" class="input" type="text" placeholder="YouTube embed or Drive preview URL" />
           </div>
         </div>
-
-        <div style="margin-top:12px;">
-          <label class="muted">Verifier</label>
-          <input id="newVerifier" class="input" type="text" placeholder="Verifier / first victor" />
-        </div>
       </div>
 
       <div class="topbar">
         <button class="btn btn-primary" id="submitBtn">Send for review</button>
       </div>
 
-      <div class="tiny">New levels do not get added instantly. They stay in review until approved.</div>
+      <div class="tiny">Record submissions only update the Victor List after an admin accepts them.</div>
     </div>
 
     <div class="section">
@@ -445,9 +441,28 @@ function normalizeVideo(url){
   return s;
 }
 
-const STORAGE_LEVELS = "pshs_demonlist_levels_v3";
-const STORAGE_PENDING = "pshs_demonlist_pending_v3";
-const STORAGE_ADMIN = "pshs_admin_v3";
+function makeThumb(title, accent = "#ff4b4b", accent2 = "#111522") {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0%" stop-color="${accent2}"/>
+        <stop offset="100%" stop-color="${accent}"/>
+      </linearGradient>
+    </defs>
+    <rect width="640" height="360" fill="url(#g)"/>
+    <circle cx="520" cy="110" r="70" fill="rgba(255,255,255,0.10)"/>
+    <circle cx="120" cy="255" r="56" fill="rgba(0,0,0,0.25)"/>
+    <path d="M0 280 L120 210 L220 250 L330 180 L450 230 L640 150 L640 360 L0 360 Z" fill="rgba(0,0,0,0.18)"/>
+    <text x="50%" y="52%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" fill="#ffffff">${title}</text>
+    <text x="50%" y="65%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#dce4f5">PSHS-MC Demonlist</text>
+  </svg>`;
+  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+}
+
+const STORAGE_LEVELS = "pshs_demonlist_levels_v4";
+const STORAGE_PENDING = "pshs_demonlist_pending_v4";
+const STORAGE_ADMIN = "pshs_admin_v4";
 
 let isAdmin = localStorage.getItem(STORAGE_ADMIN) === "1";
 
@@ -461,7 +476,7 @@ const defaultLevels = [
     points: "23.99",
     img: "https://imgs.search.brave.com/r12GxqItNoTDHicWG1c54CGh3kWG884UMw2VCIymZrU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC93cDg5MjYy/MzguanBn",
     video: "https://www.youtube.com/embed/vBBZvXb0HrA",
-    verifier: "sadboi202"
+    victorList: ["sadboi202"]
   },
   {
     rank: 2,
@@ -472,7 +487,7 @@ const defaultLevels = [
     points: "20.92",
     img: "https://imgs.search.brave.com/pbDTH9K3MkZ-MYgp5UH6N83UeHq4ORlPDyWIXMsml-4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeS1nYW1lcy5p/by9jYWNoZS9kYXRh/L2ltYWdlL2dhbWUv/Z2VvbWV0cnktZGFz/aC1jYXRhY2x5c20t/bTMyMHgxOTAud2Vi/cA",
     video: "https://www.youtube.com/embed/8x0gpGutHUE",
-    verifier: "sadboi202"
+    victorList: ["sadboi202"]
   },
   {
     rank: 3,
@@ -483,7 +498,7 @@ const defaultLevels = [
     points: "15.94",
     img: "https://imgs.search.brave.com/XC2vLZuw9oqam9HAbokfUZFRYwr0y8z8nLuVzcuxEME/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9B/bXlocnJfZmFVZy9t/YXhyZXNkZWZhdWx0/LmpwZw",
     video: "https://www.youtube.com/embed/N05ijX3vz9U",
-    verifier: "sadboi202"
+    victorList: ["sadboi202"]
   },
   {
     rank: 4,
@@ -494,7 +509,7 @@ const defaultLevels = [
     points: "11.16",
     img: "https://imgs.search.brave.com/MPJ9w0-ZTvqphSCuEYGqWFUlxPma3WAO-8g-2kzsz4A/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlvL2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1uaW5l/LWNpcmNsZXMtbTE5/MngxMDgud2VicA",
     video: "https://www.youtube.com/embed/DO36t7DV0ec",
-    verifier: "sadboi202"
+    victorList: ["sadboi202"]
   },
   {
     rank: 5,
@@ -505,7 +520,7 @@ const defaultLevels = [
     points: "11.14",
     img: "https://imgs.search.brave.com/PtElB1kO3lVJRFd-i07TXhaAYOFuBepTEMDaAQ67tGc/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlvL2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1qYXdi/cmVha2VyLW0xOTJ4/MTA4LndlYnA",
     video: "https://drive.google.com/file/d/1HYy3aCN4TvQTkoid7fDHAD12guzGlRBe/preview",
-    verifier: "daBlooKat121"
+    victorList: ["daBlooKat121"]
   },
   {
     rank: 6,
@@ -514,9 +529,9 @@ const defaultLevels = [
     id: "111205474",
     diff: "Hard Demon",
     points: "8.01",
-    img: "https://i.ytimg.com/vi/placeholder/mqdefault.jpg",
+    img: makeThumb("Thermal Madness", "#a855f7", "#15081f"),
     video: "",
-    verifier: "N/A, no info"
+    victorList: []
   },
   {
     rank: 7,
@@ -527,25 +542,9 @@ const defaultLevels = [
     points: "5.91",
     img: "https://imgs.search.brave.com/rfgpinVitTV25ZVcwtl4x8v9gyFBsys_skODwytdwyI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWRhc2h3YXZlLmNvbS9jYWNoZS9kYXRhL2ltYWdlL2dhbWUvbWF4cmVzZGVmYXVsdDM2LW0zMjB4MTgwLndlYnA",
     video: "https://drive.google.com/file/d/1IBfQPdzNedlEc2r_9eF2PjP-yuToTvYZ/preview",
-    verifier: "daBlooKat121"
+    victorList: ["daBlooKat121"]
   }
 ];
-
-const STORAGE_LEVELS_KEY = STORAGE_LEVELS;
-const STORAGE_PENDING_KEY = STORAGE_PENDING;
-let levels = loadJSON(STORAGE_LEVELS_KEY, defaultLevels);
-let pending = loadJSON(STORAGE_PENDING_KEY, []);
-
-const listEl = document.getElementById("list");
-const listPage = document.getElementById("listPage");
-const detailPage = document.getElementById("detailPage");
-const searchEl = document.getElementById("search");
-const queueEl = document.getElementById("queue");
-const submissionTypeEl = document.getElementById("submissionType");
-const newLevelFields = document.getElementById("newLevelFields");
-const existingLevelWrap = document.getElementById("existingLevelWrap");
-const existingLevelEl = document.getElementById("existingLevel");
-const adminStatus = document.getElementById("adminStatus");
 
 function loadJSON(key, fallback){
   try{
@@ -558,16 +557,46 @@ function loadJSON(key, fallback){
   }
 }
 
+function normalizeLevels(arr){
+  return arr.map((d, i) => ({
+    rank: d.rank ?? i + 1,
+    name: d.name ?? "Unnamed",
+    creator: d.creator ?? "Unknown",
+    id: d.id ?? String(Date.now() + i),
+    diff: d.diff ?? "Unknown",
+    points: d.points ?? "0",
+    img: d.img ?? makeThumb(d.name ?? "Level"),
+    video: d.video ?? "",
+    victorList: Array.isArray(d.victorList) ? d.victorList : (d.victorList ? [d.victorList] : [])
+  }));
+}
+
+let levels = normalizeLevels(loadJSON(STORAGE_LEVELS, defaultLevels));
+let pending = loadJSON(STORAGE_PENDING, []);
+
+const listEl = document.getElementById("list");
+const listPage = document.getElementById("listPage");
+const detailPage = document.getElementById("detailPage");
+const searchEl = document.getElementById("search");
+const queueEl = document.getElementById("queue");
+const submissionTypeEl = document.getElementById("submissionType");
+const newLevelFields = document.getElementById("newLevelFields");
+const existingLevelWrap = document.getElementById("existingLevelWrap");
+const existingLevelEl = document.getElementById("existingLevel");
+const adminStatus = document.getElementById("adminStatus");
+
 function saveState(){
-  localStorage.setItem(STORAGE_LEVELS_KEY, JSON.stringify(levels));
-  localStorage.setItem(STORAGE_PENDING_KEY, JSON.stringify(pending));
+  localStorage.setItem(STORAGE_LEVELS, JSON.stringify(levels));
+  localStorage.setItem(STORAGE_PENDING, JSON.stringify(pending));
   localStorage.setItem(STORAGE_ADMIN, isAdmin ? "1" : "0");
 }
 
 function reindexLevels(){
-  levels.forEach((d, i) => {
-    d.rank = i + 1;
-  });
+  levels.forEach((d, i) => { d.rank = i + 1; });
+}
+
+function victorText(list){
+  return list && list.length ? list.join(", ") : "N/A";
 }
 
 function updateAdminStatus(){
@@ -579,7 +608,6 @@ function updateAdminStatus(){
 function loginAdmin(){
   const pass = prompt("Admin password:");
   if(pass === null) return;
-
   if(pass === "pshs-admin123"){
     isAdmin = true;
     saveState();
@@ -604,12 +632,13 @@ function populateLevelSelect(){
 
 function renderList(filter = ""){
   const q = filter.toLowerCase().trim();
-  const filtered = levels.filter(d =>
-    d.name.toLowerCase().includes(q) ||
-    d.creator.toLowerCase().includes(q) ||
-    d.diff.toLowerCase().includes(q) ||
-    String(d.verifier || "").toLowerCase().includes(q)
-  );
+  const filtered = levels.filter(d => {
+    const victors = victorText(d.victorList).toLowerCase();
+    return d.name.toLowerCase().includes(q) ||
+      d.creator.toLowerCase().includes(q) ||
+      d.diff.toLowerCase().includes(q) ||
+      victors.includes(q);
+  });
 
   if(filtered.length === 0){
     listEl.innerHTML = `<div class="empty">No demons found.</div>`;
@@ -623,7 +652,7 @@ function renderList(filter = ""){
       <div class="info">
         <div class="title">${escapeHTML(d.name)}</div>
         <div class="sub">published by ${escapeHTML(d.creator)}</div>
-        <div class="sub">verifier: ${escapeHTML(d.verifier || "N/A")}</div>
+        <div class="sub">Victor List: ${escapeHTML(victorText(d.victorList))}</div>
         <div class="points">${escapeHTML(d.points)} points • ${escapeHTML(d.diff)}</div>
         <div class="badge">ID ${escapeHTML(d.id)}</div>
         ${isAdmin ? `
@@ -646,12 +675,10 @@ function openLevel(rank){
   detailPage.style.display = "block";
 
   document.getElementById("dTitle").textContent = `#${d.rank} – ${d.name}`;
-  document.getElementById("dInfo").textContent = `published by ${d.creator} • verifier ${d.verifier || "N/A"} • ID ${d.id}`;
+  document.getElementById("dInfo").textContent = `published by ${d.creator} • ID ${d.id}`;
 
   if(d.video && d.video.trim() !== ""){
-    document.getElementById("video").innerHTML = `
-      <iframe src="${normalizeVideo(d.video)}" allowfullscreen></iframe>
-    `;
+    document.getElementById("video").innerHTML = `<iframe src="${normalizeVideo(d.video)}" allowfullscreen></iframe>`;
   }else{
     document.getElementById("video").innerHTML = `<div class="no-video">No video linked yet.</div>`;
   }
@@ -660,15 +687,8 @@ function openLevel(rank){
     <div class="stat">Difficulty: ${escapeHTML(d.diff)}</div>
     <div class="stat">Points: ${escapeHTML(d.points)}</div>
     <div class="stat">Level ID: ${escapeHTML(d.id)}</div>
-    <div class="stat">Verifier: ${escapeHTML(d.verifier || "N/A")}</div>
+    <div class="stat">Victor List: ${escapeHTML(victorText(d.victorList))}</div>
   `;
-
-  if(isAdmin){
-    const stats = document.getElementById("stats");
-    stats.innerHTML += `
-      <div class="stat">Admin tools: available</div>
-    `;
-  }
 }
 
 function back(){
@@ -693,7 +713,6 @@ function deleteLevel(rank){
   if(!isAdmin) return;
   const d = levels.find(x => x.rank === rank);
   if(!d) return;
-
   if(!confirm(`Delete #${d.rank} – ${d.name}?`)) return;
 
   levels = levels.filter(x => x.rank !== rank);
@@ -702,11 +721,6 @@ function deleteLevel(rank){
   populateLevelSelect();
   renderList(searchEl.value);
   renderQueue();
-
-  const title = document.getElementById("dTitle").textContent;
-  if(title.includes(d.name)){
-    back();
-  }
 }
 
 function renderQueue(){
@@ -740,9 +754,13 @@ function renderQueue(){
 
         ${item.type === "newLevel" ? `
           <div class="queue-meta" style="margin-top:8px;">
-            creator: ${escapeHTML(item.newLevel.creator)} • diff: ${escapeHTML(item.newLevel.diff)} • points: ${escapeHTML(item.newLevel.points)} • verifier: ${escapeHTML(item.newLevel.verifier || "N/A")}
+            creator: ${escapeHTML(item.newLevel.creator)} • diff: ${escapeHTML(item.newLevel.diff)} • points: ${escapeHTML(item.newLevel.points)}
           </div>
-        ` : ""}
+        ` : `
+          <div class="queue-meta" style="margin-top:8px;">
+            will add to Victor List on approval: ${escapeHTML(item.username)}
+          </div>
+        `}
 
         <div class="queue-actions">
           ${isAdmin && item.status === "pending" ? `
@@ -770,13 +788,23 @@ function approveSubmission(id){
       id: item.newLevel.id || String(Date.now()),
       diff: item.newLevel.diff,
       points: item.newLevel.points || "0",
-      img: item.newLevel.img || "https://via.placeholder.com/320x180?text=New+Level",
+      img: item.newLevel.img || makeThumb(item.newLevel.name || "New Level", "#64748b", "#111522"),
       video: normalizeVideo(item.newLevel.video || ""),
-      verifier: item.newLevel.verifier || "N/A"
+      victorList: []
     };
     levels.push(newLevel);
     reindexLevels();
     populateLevelSelect();
+  }
+
+  if(item.type === "record"){
+    const level = levels.find(x => x.rank === item.levelRank);
+    if(level){
+      if(!Array.isArray(level.victorList)) level.victorList = [];
+      if(!level.victorList.includes(item.username)){
+        level.victorList.push(item.username);
+      }
+    }
   }
 
   item.status = "approved";
@@ -837,7 +865,6 @@ function submitForm(){
     const newPoints = document.getElementById("newPoints").value.trim();
     const newImg = document.getElementById("newImg").value.trim();
     const newVideo = document.getElementById("newVideo").value.trim();
-    const newVerifier = document.getElementById("newVerifier").value.trim();
 
     if(!newName || !newCreator || !newDiff){
       alert("Fill in at least level name, creator, and difficulty for a new level.");
@@ -850,8 +877,7 @@ function submitForm(){
       diff: newDiff,
       points: newPoints || "0",
       img: newImg || "",
-      video: normalizeVideo(newVideo || ""),
-      verifier: newVerifier || "N/A"
+      video: normalizeVideo(newVideo || "")
     };
   }
 
@@ -869,7 +895,6 @@ function submitForm(){
   document.getElementById("newPoints").value = "";
   document.getElementById("newImg").value = "";
   document.getElementById("newVideo").value = "";
-  document.getElementById("newVerifier").value = "";
 
   alert("Submission sent for review.");
 }
