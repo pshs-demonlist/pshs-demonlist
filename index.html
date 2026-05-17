@@ -829,7 +829,7 @@ function deleteSubmission(id){
   renderQueue();
 }
 
-async function submitForm() {
+function submitForm() {
   const type = submissionTypeEl.value;
   const username = document.getElementById("username").value.trim();
   const recordLink = document.getElementById("recordLink").value.trim();
@@ -858,6 +858,7 @@ async function submitForm() {
       alert("Pick a level first.");
       return;
     }
+
     item.levelRank = level.rank;
     item.levelName = level.name;
     item.levelId = level.id;
@@ -890,23 +891,20 @@ async function submitForm() {
   saveState();
   renderQueue();
 
-  try {
-    console.log("Sending dispatch...");
+  document.getElementById("username").value = "";
+  document.getElementById("recordLink").value = "";
+  document.getElementById("rawFootage").value = "";
+  document.getElementById("notes").value = "";
+  document.getElementById("newName").value = "";
+  document.getElementById("newCreator").value = "";
+  document.getElementById("newLevelId").value = "";
+  document.getElementById("newDiff").value = "";
+  document.getElementById("newPoints").value = "";
+  document.getElementById("newImg").value = "";
+  document.getElementById("newVideo").value = "";
 
-    const res = await fetch("https://api.github.com/repos/pshs-demonlist/pshs-demonlist/dispatches", {
-  method: "POST",
-  headers: {
-    "Accept": "application/vnd.github+json",
-    "Content-Type": "application/json",
-    "Authorization": "Bearer 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"
-  },
-  body: JSON.stringify({
-    event_type: "submit-level",
-    client_payload: {
-      level: item
-    }
-  })
-});
+  alert("Submission sent for review.");
+}
 
 const text = await res.text();
 
