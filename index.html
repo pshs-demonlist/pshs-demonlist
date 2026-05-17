@@ -1,389 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PSHS-MC Demonlist</title>
-  <style>
-    :root{
-      --bg:#0b0d12;
-      --panel:#111522;
-      --panel-2:#0f1320;
-      --line:#1e2438;
-      --text:#eef2ff;
-      --muted:#9aa3b2;
-      --accent:#ff4b4b;
-      --accent-2:#2d3550;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PSHS-MC Demonlist</title>
+<style>
+  :root{
+    --bg:#0b0d12;
+    --panel:#111522;
+    --line:#1e2438;
+    --text:#e9eefc;
+    --muted:#9aa3b2;
+    --accent:#ff4b4b;
+  }
 
-    * { box-sizing: border-box; }
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #0b0d12 0%, #0a0c10 100%);
-      color: var(--text);
-    }
+  header{
+    background:var(--panel);
+    border-bottom:1px solid var(--line);
+    padding:16px 18px;
+    font-size:20px;
+    font-weight:700;
+    position:sticky;
+    top:0;
+  }
 
-    .topbar {
-      background: var(--panel);
-      border-bottom: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+  .wrap{
+    max-width:1000px;
+    margin:20px auto;
+    padding:0 16px;
+  }
 
-    .topbar-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+  .list{
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+  }
 
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+  .row{
+    display:flex;
+    gap:14px;
+    padding:14px;
+    border-bottom:1px solid var(--line);
+    background:#0f1320;
+    cursor:pointer;
+    transition:.15s;
+  }
 
-    .brand h1 {
-      margin: 0;
-      font-size: 20px;
-      line-height: 1.1;
-      letter-spacing: .3px;
-    }
+  .row:hover{
+    background:#171c2d;
+  }
 
-    .brand p {
-      margin: 0;
-      font-size: 13px;
-      color: var(--muted);
-    }
+  .rank{
+    width:60px;
+    color:var(--accent);
+    font-weight:700;
+    font-size:18px;
+  }
 
-    .nav {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      font-size: 13px;
-    }
+  .thumb{
+    width:160px;
+    height:90px;
+    background:#222;
+    border-radius:6px;
+    overflow:hidden;
+    flex-shrink:0;
+  }
 
-    .nav a {
-      color: var(--text);
-      text-decoration: none;
-      padding: 8px 10px;
-      border-radius: 8px;
-      background: rgba(255,255,255,.03);
-      border: 1px solid transparent;
-    }
+  .thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
 
-    .nav a:hover {
-      border-color: var(--line);
-      background: rgba(255,255,255,.06);
-    }
+  .info{
+    flex:1;
+  }
 
-    .wrap {
-      max-width: 1100px;
-      margin: 24px auto 40px;
-      padding: 0 18px;
-    }
+  .title{
+    font-size:18px;
+    font-weight:700;
+  }
 
-    .hero {
-      background: rgba(255,255,255,.02);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 16px;
-    }
+  .sub{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:4px;
+  }
 
-    .hero h2 {
-      margin: 0 0 8px;
-      font-size: 24px;
-    }
+  .points{
+    font-size:13px;
+    color:#cfd6e6;
+    margin-top:6px;
+  }
 
-    .hero p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.5;
-      max-width: 900px;
-    }
+  /* DETAIL PAGE */
+  .detail{
+    display:none;
+  }
 
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      margin: 16px 0;
-    }
+  .back{
+    color:var(--muted);
+    cursor:pointer;
+    margin-bottom:12px;
+    display:inline-block;
+  }
 
-    .search {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      background: #151a2b;
-      color: var(--text);
-      outline: none;
-      font-size: 15px;
-    }
+  .video{
+    width:100%;
+    aspect-ratio:16/9;
+    margin-top:12px;
+  }
 
-    .search::placeholder { color: #7f8798; }
+  iframe{
+    width:100%;
+    height:100%;
+    border:none;
+  }
 
-    .counter {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 14px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      background: #111827;
-      color: var(--muted);
-      font-size: 13px;
-      min-height: 46px;
-      white-space: nowrap;
-    }
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:14px;
+    font-size:13px;
+    color:var(--muted);
+  }
 
-    .list {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      background: rgba(255,255,255,.02);
-    }
-
-    .list-header,
-    .row {
-      display: grid;
-      grid-template-columns: 70px 1.7fr 1.1fr 160px 150px;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .list-header {
-      background: #0d1120;
-      color: #c4cad8;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .row {
-      padding: 12px 14px;
-      background: var(--panel-2);
-      border-bottom: 1px solid var(--line);
-      transition: background .15s ease, transform .15s ease;
-    }
-
-    .row:hover {
-      background: #171c2d;
-    }
-
-    .row:last-child {
-      border-bottom: 0;
-    }
-
-    .rank {
-      font-weight: 700;
-      color: var(--accent);
-      font-size: 16px;
-    }
-
-    .level {
-      font-weight: 700;
-      font-size: 16px;
-      line-height: 1.15;
-    }
-
-    .creator {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 3px;
-    }
-
-    .id {
-      color: #a9b2c4;
-      font-size: 13px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .score {
-      font-variant-numeric: tabular-nums;
-      font-weight: 700;
-      text-align: right;
-    }
-
-    .badge {
-      justify-self: start;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,.08);
-      white-space: nowrap;
-    }
-
-    .extreme { background: rgba(255,75,75,.15); color: #ff8a8a; }
-    .insane  { background: rgba(255,149,0,.14); color: #ffb357; }
-    .hard    { background: rgba(255,210,0,.12); color: #ffe16a; }
-    .medium  { background: rgba(86,170,255,.14); color: #8cc4ff; }
-
-    .empty {
-      display: none;
-      padding: 24px 18px;
-      color: var(--muted);
-      text-align: center;
-      background: var(--panel-2);
-    }
-
-    .footer {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-    }
-
-    @media (max-width: 860px) {
-      .list-header {
-        display: none;
-      }
-
-      .row {
-        grid-template-columns: 52px 1fr;
-        grid-template-areas:
-          "rank level"
-          "rank creator"
-          "id badge"
-          "score score";
-        row-gap: 6px;
-        padding: 14px;
-      }
-
-      .rank { grid-area: rank; font-size: 18px; }
-      .level { grid-area: level; }
-      .creator { grid-area: creator; }
-      .id { grid-area: id; }
-      .badge { grid-area: badge; justify-self: end; }
-      .score { grid-area: score; text-align: left; }
-
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
-
-      .counter {
-        min-height: auto;
-        padding: 10px 14px;
-      }
-    }
-  </style>
+  .stat{
+    background:#0f1320;
+    border:1px solid var(--line);
+    padding:10px;
+    border-radius:8px;
+  }
+</style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <h1>PSHS-MC Demonlist</h1>
-        <p>Geometry Dash hardest demons, GitHub Pages edition</p>
+
+<header>PSHS-MC Demonlist</header>
+
+<div class="wrap">
+
+<!-- LIST PAGE -->
+<div id="listPage">
+  <div class="list" id="list"></div>
+</div>
+
+<!-- DETAIL PAGE -->
+<div class="detail" id="detailPage">
+  <div class="back" onclick="back()">← Back to list</div>
+  <h2 id="dTitle"></h2>
+  <div id="dInfo" class="sub"></div>
+
+  <div class="video" id="video"></div>
+
+  <div class="stats" id="stats"></div>
+</div>
+
+</div>
+
+<script>
+const demons = [
+  {
+    rank:1,
+    name:"Bloodbath",
+    creator:"Riot",
+    id:"10565740",
+    diff:"Extreme Demon",
+    points:"23.99",
+    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+  },
+  {
+    rank:2,
+    name:"Cataclysm",
+    creator:"GGboy",
+    id:"3979721",
+    diff:"Extreme Demon",
+    points:"20.92",
+    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+  },
+  {
+    rank:3,
+    name:"Poltergeist",
+    creator:"AndromedaGMD",
+    id:"7054561",
+    diff:"Insane Demon",
+    points:"15.94",
+    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+  },
+  {
+    rank:4,
+    name:"Nine Circles",
+    creator:"Zobros",
+    id:"533927",
+    diff:"Hard Demon",
+    points:"11.16",
+    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+  },
+  {
+    rank:5,
+    name:"Jawbreaker",
+    creator:"ZenthicAlpha",
+    id:"6939821",
+    diff:"Hard Demon",
+    points:"11.14",
+    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+  },
+  {
+    rank:6,
+    name:"Thermal Madness",
+    creator:"ManiacDan",
+    id:"111205474",
+    diff:"Hard Demon",
+    points:"8.01",
+    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+  },
+  {
+    rank:7,
+    name:"Solar Circles",
+    creator:"D4rkGryf",
+    id:"493898",
+    diff:"Medium Demon",
+    points:"5.91",
+    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+  }
+];
+
+const listEl = document.getElementById("list");
+const listPage = document.getElementById("listPage");
+const detailPage = document.getElementById("detailPage");
+
+function renderList(){
+  listEl.innerHTML = demons.map(d => `
+    <div class="row" onclick="openLevel(${d.rank})">
+      <div class="rank">#${d.rank}</div>
+      <div class="thumb"><img src="${d.img}" /></div>
+      <div class="info">
+        <div class="title">${d.name}</div>
+        <div class="sub">published by ${d.creator}</div>
+        <div class="points">${d.points} points • ${d.diff}</div>
       </div>
-      <nav class="nav">
-        <a href="#mainlist">Main List</a>
-        <a href="#about">About</a>
-      </nav>
     </div>
-  </div>
+  `).join("");
+}
 
-  <main class="wrap">
-    <section class="hero" id="about">
-      <h2>Current Demonlist</h2>
-      <p>
-        This is a clean Pointercrate-style layout for your school demonlist.
-        It is fully static, easy to edit, and works on GitHub Pages with no backend.
-      </p>
-    </section>
+function openLevel(rank){
+  const d = demons.find(x => x.rank === rank);
 
-    <div class="toolbar">
-      <input class="search" id="search" type="text" placeholder="Search by level, creator, difficulty, or ID..." />
-      <div class="counter" id="counter">7 entries</div>
-    </div>
+  listPage.style.display="none";
+  detailPage.style.display="block";
 
-    <section class="list" id="mainlist">
-      <div class="list-header">
-        <div>Rank</div>
-        <div>Level</div>
-        <div>Creator</div>
-        <div>ID</div>
-        <div style="text-align:right;">Score</div>
-      </div>
-      <div id="rows"></div>
-      <div class="empty" id="empty">No results found.</div>
-    </section>
+  document.getElementById("dTitle").textContent = `#${d.rank} – ${d.name}`;
+  document.getElementById("dInfo").textContent = `published by ${d.creator} • ID ${d.id}`;
 
-    <div class="footer">
-      Made for PSHS-MC • Static HTML • GitHub Pages ready
-    </div>
-  </main>
+  document.getElementById("video").innerHTML = `
+    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>
+  `;
 
-  <script>
-    const demons = [
-      { rank: 1, level: "Bloodbath", creator: "Riot", id: "10565740", score: "23.99", difficulty: "Extreme Demon", cls: "extreme" },
-      { rank: 2, level: "Cataclysm", creator: "GGboy", id: "3979721", score: "20.92", difficulty: "Extreme Demon", cls: "extreme" },
-      { rank: 3, level: "Poltergeist", creator: "AndromedaGMD", id: "7054561", score: "15.94", difficulty: "Insane Demon", cls: "insane" },
-      { rank: 4, level: "Nine Circles", creator: "Zobros", id: "533927", score: "11.16", difficulty: "Hard Demon", cls: "hard" },
-      { rank: 5, level: "Jawbreaker", creator: "ZenthicAlpha", id: "6939821", score: "11.14", difficulty: "Hard Demon", cls: "hard" },
-      { rank: 6, level: "Thermal Madness", creator: "ManiacDan", id: "111205474", score: "8.01", difficulty: "Hard Demon", cls: "hard" },
-      { rank: 7, level: "Solar Circles", creator: "D4rkGryf", id: "493898", score: "5.91", difficulty: "Medium Demon", cls: "medium" },
-    ];
+  document.getElementById("stats").innerHTML = `
+    <div class="stat">Difficulty: ${d.diff}</div>
+    <div class="stat">Points: ${d.points}</div>
+    <div class="stat">Level ID: ${d.id}</div>
+  `;
+}
 
-    const rowsEl = document.getElementById("rows");
-    const searchEl = document.getElementById("search");
-    const counterEl = document.getElementById("counter");
-    const emptyEl = document.getElementById("empty");
+function back(){
+  detailPage.style.display="none";
+  listPage.style.display="block";
+}
 
-    function render(list) {
-      rowsEl.innerHTML = list.map(d => `
-        <article class="row">
-          <div class="rank">#${d.rank}</div>
-          <div>
-            <div class="level">${d.level}</div>
-            <div class="creator">by ${d.creator}</div>
-          </div>
-          <div class="id">${d.id}</div>
-          <div class="badge ${d.cls}">${d.difficulty}</div>
-          <div class="score">${d.score}</div>
-        </article>
-      `).join("");
+renderList();
+</script>
 
-      counterEl.textContent = `${list.length} entr${list.length === 1 ? "y" : "ies"}`;
-      emptyEl.style.display = list.length ? "none" : "block";
-    }
-
-    function filterList() {
-      const q = searchEl.value.trim().toLowerCase();
-      if (!q) return render(demons);
-
-      const filtered = demons.filter(d => {
-        return [
-          d.rank,
-          d.level,
-          d.creator,
-          d.id,
-          d.score,
-          d.difficulty
-        ].some(v => String(v).toLowerCase().includes(q));
-      });
-
-      render(filtered);
-    }
-
-    searchEl.addEventListener("input", filterList);
-    render(demons);
-  </script>
 </body>
 </html>
