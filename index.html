@@ -29,12 +29,30 @@
     font-weight:700;
     position:sticky;
     top:0;
+    z-index:10;
   }
 
   .wrap{
     max-width:1000px;
     margin:20px auto;
     padding:0 16px;
+  }
+
+  #search{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px 14px;
+    margin-bottom:12px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:#0f1320;
+    color:var(--text);
+    outline:none;
+    font-size:14px;
+  }
+
+  #search::placeholder{
+    color:var(--muted);
   }
 
   .list{
@@ -62,6 +80,7 @@
     color:var(--accent);
     font-weight:700;
     font-size:18px;
+    flex-shrink:0;
   }
 
   .thumb{
@@ -77,10 +96,12 @@
     width:100%;
     height:100%;
     object-fit:cover;
+    display:block;
   }
 
   .info{
     flex:1;
+    min-width:0;
   }
 
   .title{
@@ -100,7 +121,6 @@
     margin-top:6px;
   }
 
-  /* DETAIL PAGE */
   .detail{
     display:none;
   }
@@ -116,12 +136,22 @@
     width:100%;
     aspect-ratio:16/9;
     margin-top:12px;
+    background:#0f1320;
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
   }
 
   iframe{
     width:100%;
     height:100%;
     border:none;
+  }
+
+  .no-video{
+    padding:18px;
+    color:var(--muted);
+    font-size:14px;
   }
 
   .stats{
@@ -139,6 +169,30 @@
     padding:10px;
     border-radius:8px;
   }
+
+  .empty{
+    padding:16px;
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:#0f1320;
+  }
+
+  @media (max-width:700px){
+    .row{
+      flex-direction:column;
+    }
+
+    .thumb{
+      width:100%;
+      height:auto;
+      aspect-ratio:16/9;
+    }
+
+    .stats{
+      grid-template-columns:1fr;
+    }
+  }
 </style>
 </head>
 <body>
@@ -146,110 +200,133 @@
 <header>PSHS-MC Demonlist</header>
 
 <div class="wrap">
+  <!-- LIST PAGE -->
+  <div id="listPage">
+    <input id="search" type="text" placeholder="Search demons, creators, verifiers, or difficulty..." />
+    <div class="list" id="list"></div>
+  </div>
 
-<!-- LIST PAGE -->
-<div id="listPage">
-  <div class="list" id="list"></div>
-</div>
+  <!-- DETAIL PAGE -->
+  <div class="detail" id="detailPage">
+    <div class="back" onclick="back()">← Back to list</div>
+    <h2 id="dTitle"></h2>
+    <div id="dInfo" class="sub"></div>
 
-<!-- DETAIL PAGE -->
-<div class="detail" id="detailPage">
-  <div class="back" onclick="back()">← Back to list</div>
-  <h2 id="dTitle"></h2>
-  <div id="dInfo" class="sub"></div>
+    <div class="video" id="video"></div>
 
-  <div class="video" id="video"></div>
-
-  <div class="stats" id="stats"></div>
-</div>
-
+    <div class="stats" id="stats"></div>
+  </div>
 </div>
 
 <script>
 const demons = [
   {
-    rank:1,
-    name:"Bloodbath",
-    creator:"Riot",
-    id:"10565740",
-    diff:"Extreme Demon",
-    points:"23.99",
-    img:"https://imgs.search.brave.com/r12GxqItNoTDHicWG1c54CGh3kWG884UMw2VCIymZrU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC93cDg5MjYy/MzguanBn",
-    video:"https://www.youtube.com/embed/vBBZvXb0HrA"
+    rank: 1,
+    name: "Bloodbath",
+    creator: "Riot",
+    id: "10565740",
+    diff: "Extreme Demon",
+    points: "23.99",
+    img: "https://imgs.search.brave.com/r12GxqItNoTDHicWG1c54CGh3kWG884UMw2VCIymZrU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC93cDg5MjYy/MzguanBn",
+    video: "https://www.youtube.com/embed/vBBZvXb0HrA",
+    verifier: "sadboi202"
   },
   {
-    rank:2,
-    name:"Cataclysm",
-    creator:"GGboy",
-    id:"3979721",
-    diff:"Extreme Demon",
-    points:"20.92",
-    img:"https://imgs.search.brave.com/pbDTH9K3MkZ-MYgp5UH6N83UeHq4ORlPDyWIXMsml-4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeS1nYW1lcy5p/by9jYWNoZS9kYXRh/L2ltYWdlL2dhbWUv/Z2VvbWV0cnktZGFz/aC1jYXRhY2x5c20t/bTMyMHgxOTAud2Vi/cA",
-    video:"https://www.youtube.com/embed/8x0gpGutHUE"
+    rank: 2,
+    name: "Cataclysm",
+    creator: "GGboy",
+    id: "3979721",
+    diff: "Extreme Demon",
+    points: "20.92",
+    img: "https://imgs.search.brave.com/pbDTH9K3MkZ-MYgp5UH6N83UeHq4ORlPDyWIXMsml-4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeS1nYW1lcy5p/by9jYWNoZS9kYXRh/L2ltYWdlL2dhbWUv/Z2VvbWV0cnktZGFz/aC1jYXRhY2x5c20t/bTMyMHgxOTAud2Vi/cA",
+    video: "https://www.youtube.com/embed/8x0gpGutHUE",
+    verifier: "sadboi202"
   },
   {
-    rank:3,
-    name:"Poltergeist",
-    creator:"AndromedaGMD",
-    id:"7054561",
-    diff:"Insane Demon",
-    points:"15.94",
-    img:"https://imgs.search.brave.com/XC2vLZuw9oqam9HAbokfUZFRYwr0y8z8nLuVzcuxEME/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9B/bXlocnJfZmFVZy9t/YXhyZXNkZWZhdWx0/LmpwZw",
-    video:"https://www.youtube.com/embed/N05ijX3vz9U"
+    rank: 3,
+    name: "Poltergeist",
+    creator: "AndromedaGMD",
+    id: "7054561",
+    diff: "Insane Demon",
+    points: "15.94",
+    img: "https://imgs.search.brave.com/XC2vLZuw9oqam9HAbokfUZFRYwr0y8z8nLuVzcuxEME/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9B/bXlocnJfZmFVZy9t/YXhyZXNkZWZhdWx0/LmpwZw",
+    video: "https://www.youtube.com/embed/N05ijX3vz9U",
+    verifier: "sadboi202"
   },
   {
-    rank:4,
-    name:"Nine Circles",
-    creator:"Zobros",
-    id:"533927",
-    diff:"Hard Demon",
-    points:"11.16",
-    img:"https://imgs.search.brave.com/MPJ9w0-ZTvqphSCuEYGqWFUlxPma3WAO-8g-2kzsz4A/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlv/L2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1uaW5l/LWNpcmNsZXMtbTE5/MngxMDgud2VicA",
-    video:"https://www.youtube.com/embed/DO36t7DV0ec"
+    rank: 4,
+    name: "Nine Circles",
+    creator: "Zobros",
+    id: "533927",
+    diff: "Hard Demon",
+    points: "11.16",
+    img: "https://imgs.search.brave.com/MPJ9w0-ZTvqphSCuEYGqWFUlxPma3WAO-8g-2kzsz4A/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlvL2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1uaW5l/LWNpcmNsZXMtbTE5/MngxMDgud2VicA",
+    video: "https://www.youtube.com/embed/DO36t7DV0ec",
+    verifier: "sadboi202"
   },
   {
-    rank:5,
-    name:"Jawbreaker",
-    creator:"ZenthicAlpha",
-    id:"6939821",
-    diff:"Hard Demon",
-    points:"11.14",
-    img:"https://imgs.search.brave.com/PtElB1kO3lVJRFd-i07TXhaAYOFuBepTEMDaAQ67tGc/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlv/L2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1qYXdi/cmVha2VyLW0xOTJ4/MTA4LndlYnA",
-    video:"https://drive.google.com/file/d/1HYy3aCN4TvQTkoid7fDHAD12guzGlRBe/preview"
+    rank: 5,
+    name: "Jawbreaker",
+    creator: "ZenthicAlpha",
+    id: "6939821",
+    diff: "Hard Demon",
+    points: "11.14",
+    img: "https://imgs.search.brave.com/PtElB1kO3lVJRFd-i07TXhaAYOFuBepTEMDaAQ67tGc/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlvL2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1qYXdi/cmVha2VyLW0xOTJ4/MTA4LndlYnA",
+    video: "https://drive.google.com/file/d/1HYy3aCN4TvQTkoid7fDHAD12guzGlRBe/preview",
+    verifier: "daBlooKat121"
   },
   {
-    rank:6,
-    name:"Thermal Madness",
-    creator:"ManiacDan",
-    id:"111205474",
-    diff:"Hard Demon",
-    points:"8.01",
-    img:"https://i.ytimg.com/vi/placeholder/mqdefault.jpg"
+    rank: 6,
+    name: "Thermal Madness",
+    creator: "ManiacDan",
+    id: "111205474",
+    diff: "Hard Demon",
+    points: "8.01",
+    img: "https://i.ytimg.com/vi/placeholder/mqdefault.jpg",
+    video: "",
+    verifier: "N/A, no info"
   },
   {
-    rank:7,
-    name:"Solar Circles",
-    creator:"D4rkGryf",
-    id:"493898",
-    diff:"Medium Demon",
-    points:"5.91",
-    img:"https://imgs.search.brave.com/rfgpinVitTV25ZVcwtl4x8v9gyFBsys_skODwytdwyI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWRhc2h3YXZl/LmNvbS9jYWNoZS9k/YXRhL2ltYWdlL2dh/bWUvbWF4cmVzZGVm/YXVsdDM2LW0zMjB4/MTgwLndlYnA",
-    video:"https://drive.google.com/file/d/1IBfQPdzNedlEc2r_9eF2PjP-yuToTvYZ/preview"
+    rank: 7,
+    name: "Solar Circles",
+    creator: "D4rkGryf",
+    id: "493898",
+    diff: "Medium Demon",
+    points: "5.91",
+    img: "https://imgs.search.brave.com/rfgpinVitTV25ZVcwtl4x8v9gyFBsys_skODwytdwyI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWRhc2h3YXZlLmNvbS9jYWNoZS9kYXRhL2ltYWdlL2dhbWUvbWF4cmVzZGVmYXVsdDM2LW0zMjB4MTgwLndlYnA",
+    video: "https://drive.google.com/file/d/1IBfQPdzNedlEc2r_9eF2PjP-yuToTvYZ/preview",
+    verifier: "daBlooKat121"
   }
 ];
 
 const listEl = document.getElementById("list");
 const listPage = document.getElementById("listPage");
 const detailPage = document.getElementById("detailPage");
+const searchEl = document.getElementById("search");
 
-function renderList(){
-  listEl.innerHTML = demons.map(d => `
+function renderList(filter = ""){
+  const q = filter.toLowerCase().trim();
+
+  const filtered = demons.filter(d =>
+    d.name.toLowerCase().includes(q) ||
+    d.creator.toLowerCase().includes(q) ||
+    d.diff.toLowerCase().includes(q) ||
+    d.verifier.toLowerCase().includes(q)
+  );
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = `<div class="empty">No demons found.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(d => `
     <div class="row" onclick="openLevel(${d.rank})">
       <div class="rank">#${d.rank}</div>
-      <div class="thumb"><img src="${d.img}" /></div>
+      <div class="thumb"><img src="${d.img}" alt="${d.name}" /></div>
       <div class="info">
         <div class="title">${d.name}</div>
         <div class="sub">published by ${d.creator}</div>
+        <div class="sub">verified by ${d.verifier}</div>
         <div class="points">${d.points} points • ${d.diff}</div>
       </div>
     </div>
@@ -258,16 +335,21 @@ function renderList(){
 
 function openLevel(rank){
   const d = demons.find(x => x.rank === rank);
+  if (!d) return;
 
-  listPage.style.display="none";
-  detailPage.style.display="block";
+  listPage.style.display = "none";
+  detailPage.style.display = "block";
 
   document.getElementById("dTitle").textContent = `#${d.rank} – ${d.name}`;
-  document.getElementById("dInfo").textContent = `published by ${d.creator} • ID ${d.id}`;
+  document.getElementById("dInfo").textContent = `published by ${d.creator} • verifier ${d.verifier} • ID ${d.id}`;
 
-  document.getElementById("video").innerHTML = `
-  <iframe src="${d.video}" allowfullscreen></iframe>
-`;
+  if (d.video && d.video.trim() !== "") {
+    document.getElementById("video").innerHTML = `
+      <iframe src="${d.video}" allowfullscreen></iframe>
+    `;
+  } else {
+    document.getElementById("video").innerHTML = `<div class="no-video">No video linked yet.</div>`;
+  }
 
   document.getElementById("stats").innerHTML = `
     <div class="stat">Difficulty: ${d.diff}</div>
@@ -277,9 +359,13 @@ function openLevel(rank){
 }
 
 function back(){
-  detailPage.style.display="none";
-  listPage.style.display="block";
+  detailPage.style.display = "none";
+  listPage.style.display = "block";
 }
+
+searchEl.addEventListener("input", e => {
+  renderList(e.target.value);
+});
 
 renderList();
 </script>
