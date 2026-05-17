@@ -55,6 +55,44 @@
     font-size:16px;
   }
 
+  .topbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:12px 0 0;
+  }
+
+  .btn{
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    background:#1b2238;
+    color:var(--text);
+    cursor:pointer;
+    font-weight:700;
+  }
+
+  .btn:hover{ filter:brightness(1.08); }
+  .btn-primary{ background:#2d3a63; }
+  .btn-good{ background:#245b45; }
+  .btn-danger{ background:#662f36; }
+
+  .badge{
+    display:inline-block;
+    margin-top:8px;
+    padding:4px 8px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    font-size:12px;
+    color:#dce4f5;
+    background:#0b0f1a;
+  }
+
+  .muted{
+    color:var(--muted);
+    font-size:13px;
+  }
+
   #search,
   .input,
   .select,
@@ -144,17 +182,6 @@
     margin-top:6px;
   }
 
-  .badge{
-    display:inline-block;
-    margin-top:8px;
-    padding:4px 8px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    font-size:12px;
-    color:#dce4f5;
-    background:#0b0f1a;
-  }
-
   .detail{ display:none; }
 
   .back{
@@ -202,34 +229,6 @@
     border-radius:8px;
   }
 
-  .actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:12px;
-  }
-
-  .btn{
-    border:none;
-    border-radius:8px;
-    padding:10px 14px;
-    background:#1b2238;
-    color:var(--text);
-    cursor:pointer;
-    font-weight:700;
-  }
-
-  .btn:hover{ filter:brightness(1.08); }
-
-  .btn-primary{ background:#2d3a63; }
-  .btn-good{ background:#245b45; }
-  .btn-danger{ background:#662f36; }
-
-  .muted{
-    color:var(--muted);
-    font-size:13px;
-  }
-
   .queue-item{
     border:1px solid var(--line);
     border-radius:10px;
@@ -254,6 +253,7 @@
     font-size:13px;
     color:var(--muted);
     margin-top:4px;
+    word-break:break-word;
   }
 
   .queue-actions{
@@ -263,18 +263,18 @@
     margin-top:10px;
   }
 
-  .divider{
-    height:1px;
-    background:var(--line);
-    margin:14px 0;
-  }
-
   .empty{
     padding:16px;
     color:var(--muted);
     border:1px solid var(--line);
     border-radius:10px;
     background:#0f1320;
+  }
+
+  .tiny{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:8px;
   }
 
   @media (max-width:700px){
@@ -298,6 +298,16 @@
 <div class="wrap">
   <div id="listPage">
     <div class="section">
+      <h3>Admin</h3>
+      <div class="topbar">
+        <button class="btn btn-primary" onclick="loginAdmin()">Admin Login</button>
+        <button class="btn" onclick="logoutAdmin()">Exit Admin</button>
+        <button class="btn" onclick="renderList(searchEl.value); renderQueue()">Refresh</button>
+      </div>
+      <div class="tiny" id="adminStatus"></div>
+    </div>
+
+    <div class="section">
       <h3>Search</h3>
       <input id="search" type="text" placeholder="Search demons, creators, verifiers, or difficulty..." />
     </div>
@@ -309,6 +319,7 @@
 
     <div class="section">
       <h3>Submit a record or propose a new level</h3>
+
       <div class="grid">
         <div>
           <label class="muted">Submission type</label>
@@ -346,55 +357,54 @@
       </div>
 
       <div id="newLevelFields" style="display:none; margin-top:12px;">
-        <div class="divider"></div>
-        <h3 style="margin-top:0;">New level details</h3>
+        <div class="section" style="margin:0; padding:0; border:none; background:transparent;">
+          <h3 style="margin:0 0 12px;">New level details</h3>
 
-        <div class="grid">
-          <div>
-            <label class="muted">Level name</label>
-            <input id="newName" class="input" type="text" placeholder="Level name" />
+          <div class="grid">
+            <div>
+              <label class="muted">Level name</label>
+              <input id="newName" class="input" type="text" placeholder="Level name" />
+            </div>
+            <div>
+              <label class="muted">Creator</label>
+              <input id="newCreator" class="input" type="text" placeholder="Level creator" />
+            </div>
           </div>
-          <div>
-            <label class="muted">Creator</label>
-            <input id="newCreator" class="input" type="text" placeholder="Level creator" />
-          </div>
-        </div>
 
-        <div class="grid" style="margin-top:12px;">
-          <div>
-            <label class="muted">Difficulty</label>
-            <input id="newDiff" class="input" type="text" placeholder="Extreme Demon / Insane Demon / etc." />
+          <div class="grid" style="margin-top:12px;">
+            <div>
+              <label class="muted">Difficulty</label>
+              <input id="newDiff" class="input" type="text" placeholder="Extreme Demon / Insane Demon / etc." />
+            </div>
+            <div>
+              <label class="muted">Points</label>
+              <input id="newPoints" class="input" type="text" placeholder="23.99" />
+            </div>
           </div>
-          <div>
-            <label class="muted">Points</label>
-            <input id="newPoints" class="input" type="text" placeholder="23.99" />
-          </div>
-        </div>
 
-        <div class="grid" style="margin-top:12px;">
-          <div>
-            <label class="muted">Thumbnail image URL</label>
-            <input id="newImg" class="input" type="text" placeholder="Image URL" />
+          <div class="grid" style="margin-top:12px;">
+            <div>
+              <label class="muted">Thumbnail image URL</label>
+              <input id="newImg" class="input" type="text" placeholder="Image URL" />
+            </div>
+            <div>
+              <label class="muted">Video URL</label>
+              <input id="newVideo" class="input" type="text" placeholder="YouTube embed or Drive preview URL" />
+            </div>
           </div>
-          <div>
-            <label class="muted">Video URL</label>
-            <input id="newVideo" class="input" type="text" placeholder="YouTube embed or Drive preview URL" />
-          </div>
-        </div>
 
-        <div style="margin-top:12px;">
-          <label class="muted">Verifier</label>
-          <input id="newVerifier" class="input" type="text" placeholder="Verifier / first victor" />
+          <div style="margin-top:12px;">
+            <label class="muted">Verifier</label>
+            <input id="newVerifier" class="input" type="text" placeholder="Verifier / first victor" />
+          </div>
         </div>
       </div>
 
-      <div class="actions">
+      <div class="topbar">
         <button class="btn btn-primary" id="submitBtn">Send for review</button>
       </div>
 
-      <div class="muted" style="margin-top:10px;">
-        New levels do not get added instantly. They stay in review until approved.
-      </div>
+      <div class="tiny">New levels do not get added instantly. They stay in review until approved.</div>
     </div>
 
     <div class="section">
@@ -416,6 +426,38 @@
 </div>
 
 <script>
+function makeThumb(title, accent = "#ff4b4b", accent2 = "#111522") {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0%" stop-color="${accent2}"/>
+        <stop offset="100%" stop-color="${accent}"/>
+      </linearGradient>
+    </defs>
+    <rect width="640" height="360" fill="url(#g)"/>
+    <circle cx="520" cy="110" r="70" fill="rgba(255,255,255,0.10)"/>
+    <circle cx="120" cy="255" r="56" fill="rgba(0,0,0,0.25)"/>
+    <path d="M0 280 L120 210 L220 250 L330 180 L450 230 L640 150 L640 360 L0 360 Z" fill="rgba(0,0,0,0.18)"/>
+    <text x="50%" y="52%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" fill="#ffffff">${title}</text>
+    <text x="50%" y="65%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#dce4f5">PSHS-MC Demonlist</text>
+  </svg>`;
+  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+}
+
+function normalizeVideo(url){
+  const s = String(url || "").trim();
+  if(!s) return "";
+  if(s.includes("drive.google.com/file/d/")){
+    const match = s.match(/\/file\/d\/([^/]+)/);
+    if(match) return `https://drive.google.com/file/d/${match[1]}/preview`;
+  }
+  if(s.includes("/embed/")) return s;
+  const watchMatch = s.match(/[?&]v=([^&]+)/);
+  if(watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
+  return s;
+}
+
 const defaultLevels = [
   {
     rank: 1,
@@ -457,7 +499,7 @@ const defaultLevels = [
     id: "533927",
     diff: "Hard Demon",
     points: "11.16",
-    img: "https://imgs.search.brave.com/MPJ9w0-ZTvqphSCuEYGqWFUlxPma3WAO-8g-2kzsz4A/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlvL2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1uaW5l/LWNpcmNsZXMtbTE5/MngxMDgud2VicA",
+    img: makeThumb("Nine Circles", "#ff4b4b", "#270000"),
     video: "https://www.youtube.com/embed/DO36t7DV0ec",
     verifier: "sadboi202"
   },
@@ -468,7 +510,7 @@ const defaultLevels = [
     id: "6939821",
     diff: "Hard Demon",
     points: "11.14",
-    img: "https://imgs.search.brave.com/PtElB1kO3lVJRFd-i07TXhaAYOFuBepTEMDaAQ67tGc/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWdhbWVzLmlvL2NhY2hlL2RhdGEv/aW1hZ2UvZ2VvbWV0/cnktZGFzaC1qYXdi/cmVha2VyLW0xOTJ4/MTA4LndlYnA",
+    img: makeThumb("Jawbreaker", "#3b82f6", "#071225"),
     video: "https://drive.google.com/file/d/1HYy3aCN4TvQTkoid7fDHAD12guzGlRBe/preview",
     verifier: "daBlooKat121"
   },
@@ -479,7 +521,7 @@ const defaultLevels = [
     id: "111205474",
     diff: "Hard Demon",
     points: "8.01",
-    img: "https://i.ytimg.com/vi/placeholder/mqdefault.jpg",
+    img: makeThumb("Thermal Madness", "#a855f7", "#15081f"),
     video: "",
     verifier: "N/A, no info"
   },
@@ -490,17 +532,19 @@ const defaultLevels = [
     id: "493898",
     diff: "Medium Demon",
     points: "5.91",
-    img: "https://imgs.search.brave.com/rfgpinVitTV25ZVcwtl4x8v9gyFBsys_skODwytdwyI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9nZW9t/ZXRyeWRhc2h3YXZlLmNvbS9jYWNoZS9kYXRhL2ltYWdlL2dhbWUvbWF4cmVzZGVmYXVsdDM2LW0zMjB4MTgwLndlYnA",
+    img: makeThumb("Solar Circles", "#f59e0b", "#1b1200"),
     video: "https://drive.google.com/file/d/1IBfQPdzNedlEc2r_9eF2PjP-yuToTvYZ/preview",
     verifier: "daBlooKat121"
   }
 ];
 
-const STORAGE_LEVELS = "pshs_demonlist_levels";
-const STORAGE_PENDING = "pshs_demonlist_pending";
+const STORAGE_LEVELS = "pshs_demonlist_levels_v2";
+const STORAGE_PENDING = "pshs_demonlist_pending_v2";
+const STORAGE_ADMIN = "pshs_admin_v2";
 
 let levels = loadJSON(STORAGE_LEVELS, defaultLevels);
 let pending = loadJSON(STORAGE_PENDING, []);
+let isAdmin = localStorage.getItem(STORAGE_ADMIN) === "1";
 
 const listEl = document.getElementById("list");
 const listPage = document.getElementById("listPage");
@@ -511,6 +555,7 @@ const submissionTypeEl = document.getElementById("submissionType");
 const newLevelFields = document.getElementById("newLevelFields");
 const existingLevelWrap = document.getElementById("existingLevelWrap");
 const existingLevelEl = document.getElementById("existingLevel");
+const adminStatus = document.getElementById("adminStatus");
 
 function loadJSON(key, fallback){
   try{
@@ -526,6 +571,7 @@ function loadJSON(key, fallback){
 function saveState(){
   localStorage.setItem(STORAGE_LEVELS, JSON.stringify(levels));
   localStorage.setItem(STORAGE_PENDING, JSON.stringify(pending));
+  localStorage.setItem(STORAGE_ADMIN, isAdmin ? "1" : "0");
 }
 
 function escapeHTML(str){
@@ -537,13 +583,36 @@ function escapeHTML(str){
     .replace(/'/g, "&#39;");
 }
 
-function normalizeYouTube(url){
-  const s = String(url || "").trim();
-  if(!s) return "";
-  if(s.includes("/embed/")) return s;
-  const watchMatch = s.match(/[?&]v=([^&]+)/);
-  if(watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
-  return s;
+function reindexLevels(){
+  levels.forEach((d, i) => {
+    d.rank = i + 1;
+  });
+}
+
+function loginAdmin(){
+  const pass = prompt("Admin password:");
+  if(pass === null) return;
+
+  if(pass === "pshs-admin123"){
+    isAdmin = true;
+    saveState();
+    renderAll();
+    alert("Admin mode enabled");
+  } else {
+    alert("Wrong password");
+  }
+}
+
+function logoutAdmin(){
+  isAdmin = false;
+  saveState();
+  renderAll();
+}
+
+function updateAdminStatus(){
+  adminStatus.textContent = isAdmin
+    ? "Admin mode is ON. Move buttons and moderation buttons are visible."
+    : "Admin mode is OFF.";
 }
 
 function populateLevelSelect(){
@@ -554,7 +623,6 @@ function populateLevelSelect(){
 
 function renderList(filter = ""){
   const q = filter.toLowerCase().trim();
-
   const filtered = levels.filter(d =>
     d.name.toLowerCase().includes(q) ||
     d.creator.toLowerCase().includes(q) ||
@@ -577,6 +645,12 @@ function renderList(filter = ""){
         <div class="sub">verifier: ${escapeHTML(d.verifier || "N/A")}</div>
         <div class="points">${escapeHTML(d.points)} points • ${escapeHTML(d.diff)}</div>
         <div class="badge">ID ${escapeHTML(d.id)}</div>
+        ${isAdmin ? `
+          <div class="topbar" style="margin-top:10px;">
+            <button class="btn" onclick="event.stopPropagation(); moveLevel(${d.rank}, -1)">↑ Up</button>
+            <button class="btn" onclick="event.stopPropagation(); moveLevel(${d.rank}, 1)">↓ Down</button>
+          </div>
+        ` : ""}
       </div>
     </div>
   `).join("");
@@ -594,9 +668,9 @@ function openLevel(rank){
 
   if(d.video && d.video.trim() !== ""){
     document.getElementById("video").innerHTML = `
-      <iframe src="${normalizeYouTube(d.video)}" allowfullscreen></iframe>
+      <iframe src="${normalizeVideo(d.video)}" allowfullscreen></iframe>
     `;
-  }else{
+  } else {
     document.getElementById("video").innerHTML = `<div class="no-video">No video linked yet.</div>`;
   }
 
@@ -613,6 +687,19 @@ function back(){
   listPage.style.display = "block";
 }
 
+function moveLevel(rank, direction){
+  const idx = levels.findIndex(x => x.rank === rank);
+  const next = idx + direction;
+  if(idx < 0 || next < 0 || next >= levels.length) return;
+
+  [levels[idx], levels[next]] = [levels[next], levels[idx]];
+  reindexLevels();
+  saveState();
+  populateLevelSelect();
+  renderList(searchEl.value);
+  renderQueue();
+}
+
 function renderQueue(){
   if(pending.length === 0){
     queueEl.innerHTML = `<div class="empty">No submissions waiting.</div>`;
@@ -620,18 +707,17 @@ function renderQueue(){
   }
 
   queueEl.innerHTML = pending.map(item => {
-    const statusColor = item.status === "approved" ? "var(--good)" : item.status === "rejected" ? "#f87171" : "var(--warn)";
-    const title = item.type === "newLevel"
-      ? `New level proposal: ${item.newLevel.name}`
-      : `Record submission for: ${item.levelName}`;
+    const label = item.type === "newLevel"
+      ? `New level proposal: ${escapeHTML(item.newLevel?.name || "Unnamed")}`
+      : `Record submission for: ${escapeHTML(item.levelName || "Unknown")}`;
 
     return `
       <div class="queue-item">
         <div class="queue-top">
           <div>
-            <div class="queue-title">${escapeHTML(title)}</div>
+            <div class="queue-title">${label}</div>
             <div class="queue-meta">
-              type: ${escapeHTML(item.type)} • submitted by ${escapeHTML(item.username)} • status: <span style="color:${statusColor}; font-weight:700;">${escapeHTML(item.status)}</span>
+              type: ${escapeHTML(item.type)} • submitted by ${escapeHTML(item.username)} • status: <strong>${escapeHTML(item.status)}</strong>
             </div>
           </div>
           <div class="badge">${escapeHTML(item.type)}</div>
@@ -650,12 +736,13 @@ function renderQueue(){
         ` : ""}
 
         <div class="queue-actions">
-          ${item.status === "pending" ? `
+          ${isAdmin && item.status === "pending" ? `
             <button class="btn btn-good" onclick="approveSubmission('${item.id}')">Approve</button>
             <button class="btn btn-danger" onclick="rejectSubmission('${item.id}')">Reject</button>
-          ` : `
+          ` : ""}
+          ${item.status !== "pending" ? `
             <button class="btn" onclick="deleteSubmission('${item.id}')">Delete</button>
-          `}
+          ` : ""}
         </div>
       </div>
     `;
@@ -667,20 +754,19 @@ function approveSubmission(id){
   if(!item) return;
 
   if(item.type === "newLevel"){
-    const nextRank = levels.length + 1;
     const newLevel = {
-      rank: nextRank,
+      rank: levels.length + 1,
       name: item.newLevel.name,
       creator: item.newLevel.creator,
       id: item.newLevel.id || String(Date.now()),
       diff: item.newLevel.diff,
-      points: item.newLevel.points,
-      img: item.newLevel.img || "https://via.placeholder.com/320x180?text=No+Image",
-      video: item.newLevel.video || "",
+      points: item.newLevel.points || "0",
+      img: item.newLevel.img || makeThumb(item.newLevel.name || "New Level", "#64748b", "#111522"),
+      video: normalizeVideo(item.newLevel.video || ""),
       verifier: item.newLevel.verifier || "N/A"
     };
     levels.push(newLevel);
-    item.addedLevelRank = nextRank;
+    reindexLevels();
     populateLevelSelect();
   }
 
@@ -716,7 +802,7 @@ function submitForm(){
     return;
   }
 
-  let item = {
+  const item = {
     id: String(Date.now()) + Math.random().toString(16).slice(2),
     type,
     username,
@@ -736,7 +822,7 @@ function submitForm(){
     item.levelRank = level.rank;
     item.levelName = level.name;
     item.levelId = level.id;
-  }else{
+  } else {
     const newName = document.getElementById("newName").value.trim();
     const newCreator = document.getElementById("newCreator").value.trim();
     const newDiff = document.getElementById("newDiff").value.trim();
@@ -756,7 +842,7 @@ function submitForm(){
       diff: newDiff,
       points: newPoints || "0",
       img: newImg || "",
-      video: newVideo || "",
+      video: normalizeVideo(newVideo || ""),
       verifier: newVerifier || "N/A"
     };
   }
@@ -770,15 +856,13 @@ function submitForm(){
   document.getElementById("rawFootage").value = "";
   document.getElementById("notes").value = "";
 
-  if(type === "newLevel"){
-    document.getElementById("newName").value = "";
-    document.getElementById("newCreator").value = "";
-    document.getElementById("newDiff").value = "";
-    document.getElementById("newPoints").value = "";
-    document.getElementById("newImg").value = "";
-    document.getElementById("newVideo").value = "";
-    document.getElementById("newVerifier").value = "";
-  }
+  document.getElementById("newName").value = "";
+  document.getElementById("newCreator").value = "";
+  document.getElementById("newDiff").value = "";
+  document.getElementById("newPoints").value = "";
+  document.getElementById("newImg").value = "";
+  document.getElementById("newVideo").value = "";
+  document.getElementById("newVerifier").value = "";
 
   alert("Submission sent for review.");
 }
@@ -792,9 +876,14 @@ submissionTypeEl.addEventListener("change", () => {
 document.getElementById("submitBtn").addEventListener("click", submitForm);
 searchEl.addEventListener("input", e => renderList(e.target.value));
 
-populateLevelSelect();
-renderList();
-renderQueue();
+function renderAll(){
+  updateAdminStatus();
+  populateLevelSelect();
+  renderList(searchEl.value);
+  renderQueue();
+}
+
+renderAll();
 </script>
 
 </body>
